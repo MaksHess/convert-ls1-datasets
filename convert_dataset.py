@@ -1,16 +1,16 @@
 # %%
 from __future__ import annotations
+from ast import Assert
 
 from enum import StrEnum
 from typing import TYPE_CHECKING, Sequence, Any
 from pathlib import Path
 from itertools import chain, cycle
 import rich_click as click
+import warnings
 
 if TYPE_CHECKING:
     from ngio.ome_zarr_meta.ngio_specs import Channel
-
-
 
 
 WRITE_LABELS_TO = "Deconv"
@@ -37,16 +37,21 @@ PIXEL_SCALES = {
     "013": (2.0, 0.173, 0.173),
     "014": (2.0, 0.173, 0.173),
     "015": (2.0, 0.27, 0.27),
-
 }
 
 # SCALE_Z = 2.0
 # SCALE_Y = SCALE_X = 0.260
 
+
 @click.command()
 @click.argument("input", type=click.Path(exists=True, file_okay=False, path_type=Path))
 @click.argument("output", type=click.Path(file_okay=False, path_type=Path))
-@click.option("--overwrite/--no-overwrite", default=False, show_default=True, help="Overwrite existing output.")
+@click.option(
+    "--overwrite/--no-overwrite",
+    default=False,
+    show_default=True,
+    help="Overwrite existing output.",
+)
 def main(input: Path, output: Path, overwrite: bool) -> None:
     """Convert an LS1 dataset from INPUT to OME-Zarr in OUTPUT."""
     dataset_id = input.name
@@ -63,10 +68,10 @@ def main(input: Path, output: Path, overwrite: bool) -> None:
     create_tables(input, output)
 
 
-
 def get_voxel_dimensions(filepath: Path | str) -> tuple[float, float, float]:
     """return z, y, x scale"""
     import xml.etree.ElementTree as ET
+
     root = ET.parse(filepath).getroot()
     image_data = root.find(".//ImageData")
     if image_data is None:
@@ -75,7 +80,6 @@ def get_voxel_dimensions(filepath: Path | str) -> tuple[float, float, float]:
         float(image_data.get("voxeldepth")),
         float(image_data.get("pixelheight")),
         float(image_data.get("pixelwidth")),
-
     )
 
 
@@ -93,24 +97,38 @@ def create_tables(root: Path | str, output: Path | str) -> None:
     tables_group.mkdir(exist_ok=True, parents=True)
 
     df_nodes, df_edges, track_graph = load_lstree_h5(tbl_path)
-    df_track_edges = pl.DataFrame(list(track_graph.items()), orient='row', schema=['track_end', 'track_start']).explode('track_start').select('track_start', 'track_end')
+    df_track_edges = (
+        pl.DataFrame(
+            list(track_graph.items()), orient="row", schema=["track_end", "track_start"]
+        )
+        .explode("track_start")
+        .select("track_start", "track_end")
+    )
     click.echo(f"Writing tables to {tables_group}")
-    df_nodes.write_parquet(tables_group/'nodes.parquet')
-    df_edges.write_parquet(tables_group/'edges.parquet')
-    df_track_edges.write_parquet(tables_group/'track_edges.parquet')
+    df_nodes.write_parquet(tables_group / "nodes.parquet")
+    df_edges.write_parquet(tables_group / "edges.parquet")
+    df_track_edges.write_parquet(tables_group / "track_edges.parquet")
 
 
 def add_image_roi_table(output: Path | str, overwrite: bool = True) -> None:
     import ngio
+
     click.echo("adding image roi table...")
-    for fn in Path(output).glob('*.ome.zarr'):
+    for fn in Path(output).glob("*.ome.zarr"):
         click.echo(fn.name)
         container = ngio.open_ome_zarr_container(fn)
         img_table = container.build_image_roi_table()
-        container.add_table('image', table=img_table, backend='parquet', overwrite=overwrite)
+        container.add_table(
+            "image", table=img_table, backend="parquet", overwrite=overwrite
+        )
 
 
-def create_channels(root: Path | str, output: Path | str, scale: tuple[float, float, float], overwrite: bool = False) -> None:
+def create_channels(
+    root: Path | str,
+    output: Path | str,
+    scale: tuple[float, float, float],
+    overwrite: bool = False,
+) -> None:
     import ngio
     import tifffile
     import numpy as np
@@ -194,7 +212,6 @@ def create_channels(root: Path | str, output: Path | str, scale: tuple[float, fl
             )
         click.echo("consolidating...")
         images[step].consolidate()
-
 
     # for label_object, df in df_lbl.items():
     #     print(f"Processing {label_object!r}")
@@ -294,6 +311,7 @@ CHANNEL_COLORS = {
 
 def _channel_meta(channels: Sequence[str], processing_step: str) -> list[Channel]:
     from ngio.ome_zarr_meta.ngio_specs import Channel, ChannelVisualisation
+
     n_channels = len(channels)
     if n_channels in CHANNEL_COLORS:
         colors = CHANNEL_COLORS[n_channels]
@@ -302,7 +320,9 @@ def _channel_meta(channels: Sequence[str], processing_step: str) -> list[Channel
 
     out = []
     for channel, color in zip(channels, colors):
-        display_range = CHANNEL_DISPLAY_RANGE.get(processing_step, {}).get(channel, DEFAULT_DISPLAY_RANGE)
+        display_range = CHANNEL_DISPLAY_RANGE.get(processing_step, {}).get(
+            channel, DEFAULT_DISPLAY_RANGE
+        )
         out.append(
             Channel(
                 label=channel,
@@ -323,33 +343,56 @@ def _shape_to_shard_shape(
     return (1, 1, shape[2], shape[3], shape[4])
 
 
-def _validate_matching_timepoints_and_channels(root, df_ch, df_lbl):
+def _validate_matching_timepoints_and_channels(root, df_ch, df_lbl, emit_warnings=True):
     import tifffile
+
     df_ref = df_ch[list(df_ch.keys())[0]]
     ref_tps = df_ref["t_id"].unique(maintain_order=True).to_list()
     ref_chs = df_ref["channel"].unique(maintain_order=True).to_list()
     ref_frame = tifffile.imread(root / df_ref[0, "path"])
 
-    assert ref_tps == list(range(len(ref_tps))), (
-        "Timepoints must be consecutive and 0 indexed."
-    )
+    if not ref_tps == list(range(len(ref_tps))):
+        if emit_warnings:
+            warnings.warn("Timepoints must be consecutive and 0 indexed.")
+        else:
+            raise AssertionError("Timepoints must be consecutive and 0 indexed.")
 
     for k, df in chain(df_ch.items(), df_lbl.items()):
         tps = df["t_id"].unique(maintain_order=True).to_list()
-        assert len(tps) == len(ref_tps), (
-            f"Mismatching number of timepoints {len(ref_tps)} {len(tps)} in {k!r}."
-        )
-        assert tps == ref_tps, f"Timepoint mismatch in {k!r}."
+        if not len(tps) == len(ref_tps):
+            if emit_warnings:
+                warnings.warn(
+                    f"Mismatching number of timepoints {len(ref_tps)} {len(tps)} in {k!r}."
+                )
+            else:
+                raise AssertionError(
+                    f"Mismatching number of timepoints {len(ref_tps)} {len(tps)} in {k!r}."
+                )
+
+        if not tps == ref_tps:
+            if emit_warnings:
+                warnings.warn(f"Timepoint mismatch in {k!r}.")
+            else:
+                raise AssertionError(f"Timepoint mismatch in {k!r}.")
+
         frame = tifffile.imread(root / df[0, "path"])
 
-        assert ref_frame.shape == frame.shape, (
-            f"Shape mismatch: {ref_frame.shape} {frame.shape} in {k}"
-        )
+        if not ref_frame.shape == frame.shape:
+            if emit_warnings:
+                warnings.warn(f"Shape mismatch: {ref_frame.shape} {frame.shape} in {k}")
+            else:
+                raise AssertionError(
+                    f"Shape mismatch: {ref_frame.shape} {frame.shape} in {k}"
+                )
 
     for k, df in df_ch.items():
-        assert all(ref_chs == df["channel"].unique(maintain_order=True)), (
-            f"Channel mismatch {ref_chs} {df['channel'].unique(maintain_order=True)} in {k}."
-        )
+        if not all(ref_chs == df["channel"].unique(maintain_order=True)):
+            if emit_warnings:
+                warnings.warn(f"Channel mismatch {ref_chs} {df['channel'].unique(maintain_order=True)} in {k}.")
+            else:
+                raise AssertionError(
+                    f"Channel mismatch {ref_chs} {df['channel'].unique(maintain_order=True)} in {k}."
+                )
 
     return ref_frame.shape
 
