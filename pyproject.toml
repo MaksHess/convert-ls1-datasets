@@ -1,0 +1,34 @@
+[project]
+name = "convert-ls1-datasets"
+version = "0.1.0"
+description = "Convert and process LS1 microscopy datasets (channels, labels, meshes, lineage trees)"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "colorcet>=3.2.1",
+    "ngio>=0.5.9",
+    "pandas>=2.3.3",
+    "polars>=1.40.1",
+    "rich-click>=1.9.7",
+    "rustworkx>=0.17.1",
+    "tables>=3.11.1",
+]
+
+[project.scripts]
+convert-ls1-datasets = "convert_dataset:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["convert_dataset.py", "lstree_to_tracks.py", "parse_ldp_ls1_data.py"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+    "napari>=0.6.5",
+    "pyqt6>=6.11.0",
+    "ruff>=0.15.12",
+    "ty>=0.0.34",
+]
