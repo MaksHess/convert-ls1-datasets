@@ -12,6 +12,7 @@ dependencies = [
     "rich-click>=1.9.7",
     "rustworkx>=0.17.1",
     "tables>=3.11.1",
+    "tifffile>=2026.5.2",
 ]
 
 [project.scripts]

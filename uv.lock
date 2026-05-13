@@ -446,6 +446,7 @@ dependencies = [
     { name = "rich-click" },
     { name = "rustworkx" },
     { name = "tables" },
+    { name = "tifffile" },
 ]
 
 [package.dev-dependencies]
@@ -466,6 +467,7 @@ requires-dist = [
     { name = "rich-click", specifier = ">=1.9.7" },
     { name = "rustworkx", specifier = ">=0.17.1" },
     { name = "tables", specifier = ">=3.11.1" },
+    { name = "tifffile", specifier = ">=2026.5.2" },
 ]
 
 [package.metadata.requires-dev]
