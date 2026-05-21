@@ -12,6 +12,15 @@ import warnings
 if TYPE_CHECKING:
     from ngio.ome_zarr_meta.ngio_specs import Channel
 
+# remapping of names applied in the output
+NAMING_CONSISTENCY = {
+    "Deconv": "deconv",
+    "Denoise": "denoise",
+    "Raw": "raw",
+    "Channel0": "mem9",
+    "Channel1": "H2B",
+    "nuclei": "nucleus",
+}
 
 WRITE_LABELS_TO = "Deconv"
 SCALE_T = 600.0
@@ -38,6 +47,9 @@ PIXEL_SCALES = {
     "014": (2.0, 0.173, 0.173),
     "015": (2.0, 0.27, 0.27),
 }
+
+def _consistent_name(name: str) -> str:
+    return NAMING_CONSISTENCY.get(name, name)
 
 # SCALE_Z = 2.0
 # SCALE_Y = SCALE_X = 0.260
@@ -92,7 +104,7 @@ def create_tables(root: Path | str, output: Path | str) -> None:
     output = Path(output)
 
     tbl_path = root / TABLES_PATH
-    zarr_path = output / f"{WRITE_LABELS_TO}.ome.zarr"
+    zarr_path = output / f"{_consistent_name(WRITE_LABELS_TO)}.ome.zarr"
     tables_group = zarr_path / "tracks" / "geff_like"
     tables_group.mkdir(exist_ok=True, parents=True)
 
@@ -188,7 +200,7 @@ def create_channels(
         }
 
         containers[step] = ngio.create_empty_ome_zarr(
-            output / f"{step}.ome.zarr",
+            output / f"{_consistent_name(step)}.ome.zarr",
             **ngio_meta,
         )
         images[step] = containers[step].get_image("0")
@@ -261,8 +273,8 @@ def create_labels(
 
     for label_object, df in df_lbl.items():
         click.echo(f"Processing {label_object!r}")
-        container = ngio.open_ome_zarr_container(output / f"{WRITE_LABELS_TO}.ome.zarr")
-        label_image = container.derive_label(label_object, overwrite=overwrite)
+        container = ngio.open_ome_zarr_container(output / f"{_consistent_name(WRITE_LABELS_TO)}.ome.zarr")
+        label_image = container.derive_label(_consistent_name(label_object), overwrite=overwrite)
 
         for row in df.iter_rows(named=True):
             t_id = row["t_id"]
@@ -325,7 +337,7 @@ def _channel_meta(channels: Sequence[str], processing_step: str) -> list[Channel
         )
         out.append(
             Channel(
-                label=channel,
+                label=_consistent_name(channel),
                 channel_visualisation=ChannelVisualisation(
                     color=color,
                     start=display_range[0],
