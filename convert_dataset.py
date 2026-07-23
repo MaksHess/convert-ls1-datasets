@@ -1,14 +1,11 @@
-# %%
-from __future__ import annotations
-from ast import Assert
-
-from enum import StrEnum
-from typing import TYPE_CHECKING, Sequence, Any
-from pathlib import Path
-from itertools import chain, cycle
-import rich_click as click
 import warnings
+from enum import StrEnum
+from itertools import chain, cycle
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Sequence
+
 import polars as pl
+import rich_click as click
 
 if TYPE_CHECKING:
     from ngio.ome_zarr_meta.ngio_specs import Channel
@@ -136,8 +133,9 @@ def get_voxel_dimensions(filepath: Path | str) -> tuple[float, float, float]:
 
 def create_tables(root: Path | str, output: Path | str) -> None:
     import polars as pl
-    from parse_ldp_ls1_data import TABLES_PATH
+
     from lstree_to_tracks import load_lstree_h5
+    from parse_ldp_ls1_data import TABLES_PATH
 
     root = Path(root)
     output = Path(output)
@@ -183,9 +181,10 @@ def create_channels(
     overwrite: bool = False,
 ) -> None:
     import ngio
-    import tifffile
     import numpy as np
     import polars as pl
+    import tifffile
+
     from parse_ldp_ls1_data import parse_channels, parse_labels
 
     root = Path(root)
@@ -291,9 +290,10 @@ def create_labels(
     overwrite: bool = False,
 ) -> None:
     import ngio
-    import tifffile
     import numpy as np
     import polars as pl
+    import tifffile
+
     from parse_ldp_ls1_data import parse_channels, parse_labels
 
     root = Path(root)
