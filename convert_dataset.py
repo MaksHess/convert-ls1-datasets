@@ -8,6 +8,7 @@ from pathlib import Path
 from itertools import chain, cycle
 import rich_click as click
 import warnings
+import polars as pl
 
 if TYPE_CHECKING:
     from ngio.ome_zarr_meta.ngio_specs import Channel
@@ -30,29 +31,67 @@ CHANNEL_DISPLAY_RANGE = {"Deconv": {"Channel0": (0, 27000), "Channel1": (0, 8000
 DEFAULT_DISPLAY_RANGE = (0, 1500)
 
 PIXEL_SCALES = {
-    "000": (2.0, 0.27, 0.27),
-    "001": (2.0, 0.27, 0.27),
-    "002": (2.0, 0.27, 0.27),
-    "003": (2.0, 0.27, 0.27),
-    "004": (2.0, 0.27, 0.27),
-    "005": (2.0, 0.27, 0.27),
-    "006": (2.0, 0.173, 0.173),
-    "007": (2.0, 0.173, 0.173),
-    "008": (2.0, 0.173, 0.173),
-    "009": (2.0, 0.27, 0.27),
-    "010": (2.0, 0.173, 0.173),
-    "011": (2.0, 0.173, 0.173),
-    "012": (2.0, 0.173, 0.173),
-    "013": (2.0, 0.173, 0.173),
-    "014": (2.0, 0.173, 0.173),
-    "015": (2.0, 0.27, 0.27),
+    "000": (2.0, 0.26, 0.26),
+    "001": (2.0, 0.26, 0.26),
+    "002": (2.0, 0.26, 0.26),
+    "003": (2.0, 0.26, 0.26),
+    "004": (2.0, 0.26, 0.26),
+    "005": (2.0, 0.26, 0.26),
+    "006": (2.0, 0.173333, 0.173333),
+    "007": (2.0, 0.173333, 0.173333),
+    "008": (2.0, 0.173333, 0.173333),
+    "009": (2.0, 0.26, 0.26),
+    "010": (2.0, 0.173333, 0.173333),
+    "011": (2.0, 0.173333, 0.173333),
+    "012": (2.0, 0.173333, 0.173333),
+    "013": (2.0, 0.173333, 0.173333),
+    "014": (2.0, 0.173333, 0.173333),
+    "015": (2.0, 0.26, 0.26),
 }
+
+# renaming applied at the very end
+NODE_SELECTOR = [
+    # index
+    pl.col("rx_node_id").alias("node_id"),
+    # GEFF special
+    pl.col("t_id").alias("t_idx"),
+    "t",
+    "z",
+    "y",
+    "x",
+    "label_id",
+    "track_id",  # computed here
+    # additional graph stuff
+    pl.col("is_root_node").cast(pl.Boolean),  # computed here
+    pl.col("is_split_node").cast(pl.Boolean),  # computed here
+    pl.col("is_merge_node").cast(pl.Boolean),  # computed here
+    # props
+    "nuclei_volume",
+    "nuclei_mean_radius",
+    "nuclei_max_radius",
+    "nuclei_dist_to_basal_mean",
+    "nuclei_dist_to_lumen_mean",
+    "cell_volume",
+    "cell_mean_radius",
+    "cell_max_radius",
+]
+
+EDGE_SELECTOR = [
+    # index
+    "node_start",
+    "node_end",
+    # props
+    "displacement",
+    "edge_type",  # computed here
+]
+
+
+def _create_selector(d: dict[str, str | None]) -> pl.Expr:
+    return [pl.col(k).alias(v) if v is not None else pl.col(k) for k, v in d.items()]
+
 
 def _consistent_name(name: str) -> str:
     return NAMING_CONSISTENCY.get(name, name)
-
-# SCALE_Z = 2.0
-# SCALE_Y = SCALE_X = 0.260
 
 
 @click.command()
@@ -76,7 +115,7 @@ def main(input: Path, output: Path, overwrite: bool) -> None:
     click.echo(f"Pixel scale: {scale}")
     create_channels(input, output, scale=scale, overwrite=overwrite)
     create_labels(input, output, overwrite=overwrite)
-    add_image_roi_table(output)
+    # add_image_roi_table(output) # not needed anymore
     create_tables(input, output)
 
 
@@ -105,7 +144,7 @@ def create_tables(root: Path | str, output: Path | str) -> None:
 
     tbl_path = root / TABLES_PATH
     zarr_path = output / f"{_consistent_name(WRITE_LABELS_TO)}.ome.zarr"
-    tables_group = zarr_path / "tracks" / "geff_like"
+    tables_group = zarr_path / "tracks" / "nucleus.geff.like"
     tables_group.mkdir(exist_ok=True, parents=True)
 
     df_nodes, df_edges, track_graph = load_lstree_h5(tbl_path)
@@ -117,8 +156,10 @@ def create_tables(root: Path | str, output: Path | str) -> None:
         .select("track_start", "track_end")
     )
     click.echo(f"Writing tables to {tables_group}")
-    df_nodes.write_parquet(tables_group / "nodes.parquet")
-    df_edges.write_parquet(tables_group / "edges.parquet")
+    df_nodes.drop("t").with_columns((pl.col("t_id") * SCALE_T).alias("t")).select(
+        NODE_SELECTOR
+    ).write_parquet(tables_group / "nodes.parquet")
+    df_edges.select(EDGE_SELECTOR).write_parquet(tables_group / "edges.parquet")
     df_track_edges.write_parquet(tables_group / "track_edges.parquet")
 
 
@@ -273,8 +314,12 @@ def create_labels(
 
     for label_object, df in df_lbl.items():
         click.echo(f"Processing {label_object!r}")
-        container = ngio.open_ome_zarr_container(output / f"{_consistent_name(WRITE_LABELS_TO)}.ome.zarr")
-        label_image = container.derive_label(_consistent_name(label_object), overwrite=overwrite)
+        container = ngio.open_ome_zarr_container(
+            output / f"{_consistent_name(WRITE_LABELS_TO)}.ome.zarr"
+        )
+        label_image = container.derive_label(
+            _consistent_name(label_object), overwrite=overwrite
+        )
 
         for row in df.iter_rows(named=True):
             t_id = row["t_id"]
@@ -400,7 +445,9 @@ def _validate_matching_timepoints_and_channels(root, df_ch, df_lbl, emit_warning
     for k, df in df_ch.items():
         if not all(ref_chs == df["channel"].unique(maintain_order=True)):
             if emit_warnings:
-                warnings.warn(f"Channel mismatch {ref_chs} {df['channel'].unique(maintain_order=True)} in {k}.")
+                warnings.warn(
+                    f"Channel mismatch {ref_chs} {df['channel'].unique(maintain_order=True)} in {k}."
+                )
             else:
                 raise AssertionError(
                     f"Channel mismatch {ref_chs} {df['channel'].unique(maintain_order=True)} in {k}."

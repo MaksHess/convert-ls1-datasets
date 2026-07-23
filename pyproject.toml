@@ -7,11 +7,13 @@ requires-python = ">=3.13"
 dependencies = [
     "colorcet>=3.2.1",
     "imagecodecs>=2026.5.10",
+    "matplotlib>=3.10.9",
     "ngio>=0.5.9",
     "pandas>=2.3.3",
     "polars>=1.40.1",
     "rich-click>=1.9.7",
     "rustworkx>=0.17.1",
+    "seaborn>=0.13.2",
     "tables>=3.11.1",
     "tifffile>=2026.5.2",
 ]
