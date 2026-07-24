@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 from enum import StrEnum
 from itertools import chain, cycle
