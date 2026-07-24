@@ -71,6 +71,8 @@ NODE_SELECTOR = [
     "cell_volume",
     "cell_mean_radius",
     "cell_max_radius",
+    pl.col("dendogram_uniform").alias("dendrogram_uniform"),
+    pl.col("dendogram_symmetric").alias("dendogram_symmetric"),
 ]
 
 EDGE_SELECTOR = [
