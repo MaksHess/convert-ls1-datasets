@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-convert-ls1-datasets = "convert_dataset:main"
+convert-ls1-dataset = "convert_dataset:main"
 
 [build-system]
 requires = ["hatchling"]
