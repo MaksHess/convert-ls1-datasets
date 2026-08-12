@@ -148,8 +148,8 @@ def main(input: Path, output: Path, overwrite: bool) -> None:
     create_channels(input, output, scale=scale, overwrite=overwrite)
     create_labels(input, output, overwrite=overwrite)
     # add_image_roi_table(output) # not needed anymore
-    add_timestamp_table(output, start_time=start_time)
-    create_tables(input, output)
+    add_timestamp_table(output, start_time=start_time, overwrite=overwrite)
+    create_tracking_tables(input, output)
 
 
 def get_voxel_dimensions(filepath: Path | str) -> tuple[float, float, float]:
@@ -167,7 +167,7 @@ def get_voxel_dimensions(filepath: Path | str) -> tuple[float, float, float]:
     )
 
 
-def create_tables(root: Path | str, output: Path | str) -> None:
+def create_tracking_tables(root: Path | str, output: Path | str) -> None:
     import polars as pl
 
     from lstree_to_tracks import load_lstree_h5
