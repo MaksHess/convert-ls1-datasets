@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import warnings
+from datetime import datetime
 from enum import StrEnum
 from itertools import chain, cycle
 from pathlib import Path
@@ -8,6 +9,8 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 import polars as pl
 import rich_click as click
+from ngio.tables import GenericTable
+from ngio.tables.backends import BackendMeta
 
 if TYPE_CHECKING:
     from ngio.ome_zarr_meta.ngio_specs import Channel
@@ -46,6 +49,25 @@ PIXEL_SCALES = {
     "013": (2.0, 0.173333, 0.173333),
     "014": (2.0, 0.173333, 0.173333),
     "015": (2.0, 0.26, 0.26),
+}
+
+ACQUISITION_START = {  # exact time unknown, set to 00:00:00
+    "000": datetime.strptime("20161027", "%Y%m%d"),
+    "001": datetime.strptime("20161027", "%Y%m%d"),
+    "002": datetime.strptime("20161027", "%Y%m%d"),
+    "003": datetime.strptime("20170313", "%Y%m%d"),
+    "004": datetime.strptime("20181026", "%Y%m%d"),
+    "005": datetime.strptime("20181026", "%Y%m%d"),
+    "006": datetime.strptime("20181012", "%Y%m%d"),
+    "007": datetime.strptime("20190812", "%Y%m%d"),
+    "008": datetime.strptime("20181026", "%Y%m%d"),
+    "009": datetime.strptime("20181026", "%Y%m%d"),
+    "010": datetime.strptime("20181026", "%Y%m%d"),
+    "011": datetime.strptime("20181012", "%Y%m%d"),
+    "012": datetime.strptime("20190409", "%Y%m%d"),
+    "013": datetime.strptime("20190909", "%Y%m%d"),
+    "014": datetime.strptime("20181012", "%Y%m%d"),
+    "015": datetime.strptime("20181026", "%Y%m%d"),
 }
 
 # renaming applied at the very end
@@ -107,16 +129,26 @@ def _consistent_name(name: str) -> str:
 def main(input: Path, output: Path, overwrite: bool) -> None:
     """Convert an LS1 dataset from INPUT to OME-Zarr in OUTPUT."""
     dataset_id = input.name
+
     if dataset_id not in PIXEL_SCALES:
         raise click.BadParameter(
             f"{dataset_id!r} not in PIXEL_SCALES. Add it or use a known dataset folder.",
             param_hint="INPUT",
         )
     scale = PIXEL_SCALES[dataset_id]
+
+    if dataset_id not in ACQUISITION_START:
+        raise click.BadParameter(
+            f"{dataset_id!r} not in ACQUISITION_START. Add it or use a known dataset folder.",
+            param_hint="INPUT",
+        )
+    start_time = ACQUISITION_START[dataset_id]
+
     click.echo(f"Pixel scale: {scale}")
     create_channels(input, output, scale=scale, overwrite=overwrite)
     create_labels(input, output, overwrite=overwrite)
     # add_image_roi_table(output) # not needed anymore
+    add_timestamp_table(output, start_time=start_time)
     create_tables(input, output)
 
 
@@ -176,6 +208,50 @@ def add_image_roi_table(output: Path | str, overwrite: bool = True) -> None:
         container.add_table(
             "image", table=img_table, backend="parquet", overwrite=overwrite
         )
+
+
+def add_timestamp_table(
+    output: Path | str, start_time: datetime, overwrite: bool = True
+) -> None:
+    import ngio
+
+    click.echo("adding timestamps table...")
+    for fn in Path(output).glob("*.ome.zarr"):
+        click.echo(fn.name)
+        container = ngio.open_ome_zarr_container(fn)
+        n_timepoints = container.get_image().dimensions.get("t")
+        if n_timepoints is None:
+            click.ClickException(f"dataset {fn.name} has no time dimension.")
+            raise
+        table = _build_timestamp_table(
+            start_time=start_time,
+            n_timepoints=n_timepoints,
+            dt_seconds=SCALE_T,
+        )
+        container.add_table("timestamps", table, backend="parquet")
+
+
+def _build_timestamp_table(
+    start_time: datetime,
+    n_timepoints: int,
+    dt_seconds: float,
+    index_column_name: str = "t_idx",
+    timestamp_column_name: str = "posix_timestamp",
+) -> GenericTable:
+    start_timestamp = start_time.timestamp()
+
+    index_column = list(range(n_timepoints))
+    timestamp_column = [(start_timestamp + dt_seconds * i) for i in index_column]
+
+    df = pl.DataFrame(
+        {index_column_name: index_column, timestamp_column_name: timestamp_column}
+    )
+    return GenericTable.from_table_data(
+        df,
+        meta=BackendMeta(
+            backend="parquet", index_key=index_column_name, index_type="int"
+        ),
+    )
 
 
 def create_channels(
