@@ -6,5 +6,5 @@ OUTPUT_BASE="/links/groups/liberali/ldp_dev/data_zarr/Max"
 
 for dataset in 000; do
     echo "=== Converting $dataset ==="
-    convert-ls1-datasets "$INPUT_BASE/$dataset" "$OUTPUT_BASE/$dataset" --overwrite
+    convert-ls1-dataset "$INPUT_BASE/$dataset" "$OUTPUT_BASE/$dataset" --overwrite
 done
