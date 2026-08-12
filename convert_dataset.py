@@ -136,6 +136,7 @@ def main(input: Path, output: Path, overwrite: bool) -> None:
             param_hint="INPUT",
         )
     scale = PIXEL_SCALES[dataset_id]
+    click.echo(f"Pixel scale: {scale}")
 
     if dataset_id not in ACQUISITION_START:
         raise click.BadParameter(
@@ -143,8 +144,8 @@ def main(input: Path, output: Path, overwrite: bool) -> None:
             param_hint="INPUT",
         )
     start_time = ACQUISITION_START[dataset_id]
-
-    click.echo(f"Pixel scale: {scale}")
+    click.echo(f"Acquisition start time: {start_time}")
+    
     create_channels(input, output, scale=scale, overwrite=overwrite)
     create_labels(input, output, overwrite=overwrite)
     # add_image_roi_table(output) # not needed anymore
