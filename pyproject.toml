@@ -1,11 +1,12 @@
 [project]
 name = "convert-ls1-datasets"
 version = "0.1.0"
-description = "Convert and process LS1 microscopy datasets (channels, labels, meshes, lineage trees)"
+description = "Convert LS1 microscopy datasets (channels, labels, meshes, lineage trees)"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "colorcet>=3.2.1",
+    "geff",
     "imagecodecs>=2026.5.10",
     "matplotlib>=3.10.9",
     "ngio>=0.5.9",
@@ -20,6 +21,7 @@ dependencies = [
 
 [project.scripts]
 convert-ls1-dataset = "convert_dataset:main"
+convert-geff-like-to-geff = "convert_geff_like_to_geff:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -27,6 +29,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 include = ["convert_dataset.py", "lstree_to_tracks.py", "parse_ldp_ls1_data.py"]
+
+[tool.uv.sources]
+geff = { git = "https://github.com/MaksHess/geff", subdirectory = "packages/geff", branch = "fix/node-props-order" }
 
 [dependency-groups]
 dev = [

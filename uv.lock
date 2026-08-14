@@ -289,7 +289,7 @@ name = "cffi"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
+    { name = "pycparser" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/eb/56/b1ba7935a17738ae8453301356628e8147c79dbb825bcbc73dc7401f9846/cffi-2.0.0.tar.gz", hash = "sha256:44d1b5909021139fe36001ae048dbdde8214afa20200eda0f64c068cac5d5529", size = 523588, upload-time = "2025-09-08T23:24:04.541Z" }
 wheels = [
@@ -495,6 +495,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "colorcet" },
+    { name = "geff" },
     { name = "imagecodecs" },
     { name = "matplotlib" },
     { name = "ngio" },
@@ -519,6 +520,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "colorcet", specifier = ">=3.2.1" },
+    { name = "geff", git = "https://github.com/MaksHess/geff?subdirectory=packages%2Fgeff&branch=fix%2Fnode-props-order" },
     { name = "imagecodecs", specifier = ">=2026.5.10" },
     { name = "matplotlib", specifier = ">=3.10.9" },
     { name = "ngio", specifier = ">=0.5.9" },
@@ -599,6 +601,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/43/fa/6d96a0978d19e17b68d634497769987b16c8f4cd0a7a05048bec693caa6b/decorator-5.2.1.tar.gz", hash = "sha256:65f266143752f734b0a7cc83c46f4618af75b8c5911b00ccb61d0ac9b6da0360", size = 56711, upload-time = "2025-02-24T04:41:34.073Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4e/8c/f3147f5c4b73e7550fe5f9352eaa956ae838d5c51eb58e7a25b9f3e2643b/decorator-5.2.1-py3-none-any.whl", hash = "sha256:d316bb415a2d9e2d2b3abcc4084c6502fc09240e292cd76a76afc106a1c8e04a", size = 9190, upload-time = "2025-02-24T04:41:32.565Z" },
+]
+
+[[package]]
+name = "deprecated"
+version = "1.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/49/85/12f0a49a7c4ffb70572b6c2ef13c90c88fd190debda93b23f026b25f9634/deprecated-1.3.1.tar.gz", hash = "sha256:b1b50e0ff0c1fddaa5708a2c6b0a6588bb09b892825ab2b214ac9ea9d92a5223", size = 2932523, upload-time = "2025-10-30T08:19:02.757Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/d0/205d54408c08b13550c733c4b85429e7ead111c7f0014309637425520a9a/deprecated-1.3.1-py2.py3-none-any.whl", hash = "sha256:597bfef186b6f60181535a29fbe44865ce137a5079f295b479886c82729d5f3f", size = 11298, upload-time = "2025-10-30T08:19:00.758Z" },
 ]
 
 [[package]]
@@ -829,6 +843,31 @@ wheels = [
 ]
 
 [[package]]
+name = "geff"
+version = "0.1.dev287+g88e109b85"
+source = { git = "https://github.com/MaksHess/geff?subdirectory=packages%2Fgeff&branch=fix%2Fnode-props-order#88e109b859851a11b78e9316245a60ecf3ccb1c1" }
+dependencies = [
+    { name = "geff-spec" },
+    { name = "networkx" },
+    { name = "numcodecs" },
+    { name = "numpy" },
+    { name = "pydantic" },
+    { name = "typer" },
+    { name = "zarr" },
+]
+
+[[package]]
+name = "geff-spec"
+version = "1.2.0"
+source = { git = "https://github.com/MaksHess/geff?subdirectory=packages%2Fgeff-spec&branch=fix%2Fnode-props-order#88e109b859851a11b78e9316245a60ecf3ccb1c1" }
+dependencies = [
+    { name = "annotated-types" },
+    { name = "numpy" },
+    { name = "pydantic" },
+    { name = "zarr" },
+]
+
+[[package]]
 name = "google-crc32c"
 version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -924,16 +963,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ea/e6/9e3c8d2b76eefb6fa5c2c7a70d590005a6c27d8800f9fcddcff1c1f57574/imagecodecs-2026.5.10-cp312-abi3-win32.whl", hash = "sha256:e518a0569451de0648425e3a058538afee588a532921ab690be78c1ce9c8ebca", size = 16249481, upload-time = "2026-05-10T23:45:12.298Z" },
     { url = "https://files.pythonhosted.org/packages/01/bc/6ee42c44e4022dbed5a11ea4f368ad39c3fc17d6113f84432abf7c9cdce4/imagecodecs-2026.5.10-cp312-abi3-win_amd64.whl", hash = "sha256:200f70965c483ecf1755ba840485d42f4c5ab0467b3566685b18574947be8831", size = 19960184, upload-time = "2026-05-10T23:45:16.848Z" },
     { url = "https://files.pythonhosted.org/packages/56/e5/3e8ada169498fd55199ad1e9264fbcb4b29315fbf5f64440542ed2a7e9c9/imagecodecs-2026.5.10-cp312-abi3-win_arm64.whl", hash = "sha256:1c0fbc228506a41156fcf2bb7c8a38fed98807c59413aab8a805251e1eec0bf4", size = 15808614, upload-time = "2026-05-10T23:45:20.191Z" },
-    { url = "https://files.pythonhosted.org/packages/14/08/9042aca7672c9bb4b4f77eaee02c9d7532f834d562bf83575c65059746a5/imagecodecs-2026.5.10-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:39e8a162d05c8495bb0be72ae84dd297085569594c2c39b303e6812b485b376e", size = 15244398, upload-time = "2026-05-14T00:22:15.38Z" },
-    { url = "https://files.pythonhosted.org/packages/5f/66/8bc2afc06f0f26de7a966c6962696575ce7327196d109129023ce7f5facc/imagecodecs-2026.5.10-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:60abd38c03dfdb396d09c4cd5163cb9145a66625434d7c416ac5585e85ce911f", size = 12867530, upload-time = "2026-05-10T23:45:22.969Z" },
-    { url = "https://files.pythonhosted.org/packages/89/94/c0236a9b6a4b09486343adb4fb157f424b95c5d341723b61be1ab96e0946/imagecodecs-2026.5.10-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:b5b838ac2bd34aa0eaf2c8187290ad654da9c4311149230fbddf2c81386ff3ff", size = 31832193, upload-time = "2026-05-10T23:45:27.19Z" },
-    { url = "https://files.pythonhosted.org/packages/01/50/85dcd719201cc31125e333361515b158833a889e8f7cb85cb12aedea06be/imagecodecs-2026.5.10-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:aff31d63b4c145d555b367cabf9ca6f7641c4215231b4c2b9cec1586ecb2b3ea", size = 32269541, upload-time = "2026-05-10T23:45:31.76Z" },
-    { url = "https://files.pythonhosted.org/packages/6f/8a/da01e20f823449c5b29337f5826153de5d88b5eb2637c8c8bbb5154ba681/imagecodecs-2026.5.10-cp314-cp314t-win32.whl", hash = "sha256:7189cb0919d2bd4e93be92c93b418be14997586bef3964a8ed40794a4a5ffff2", size = 16992026, upload-time = "2026-05-10T23:45:35.32Z" },
-    { url = "https://files.pythonhosted.org/packages/b5/02/6c890895edb5b9ea47966085d6b67d2b2f28f9e9febe79b9fbdafb683486/imagecodecs-2026.5.10-cp314-cp314t-win_amd64.whl", hash = "sha256:78ce31baa9f5c38d269650bc18a9d904f63b0af07bb64e17e1a68d9fe9d16b39", size = 20991939, upload-time = "2026-05-10T23:45:39.19Z" },
-    { url = "https://files.pythonhosted.org/packages/f6/51/307ae581e90e68a51cadfa6a1b2a211ae37ad9b9089ea00ac9fda1921324/imagecodecs-2026.5.10-cp314-cp314t-win_arm64.whl", hash = "sha256:7f429cab8f5cac312b992e3c2e78c17bde86421d81ded487ba1e80a66bbb2393", size = 16517632, upload-time = "2026-05-10T23:45:42.246Z" },
-    { url = "https://files.pythonhosted.org/packages/ae/c3/889bf8604e1b64f771c93ea2576df21a4e069dca54ebe615d794e411c954/imagecodecs-2026.5.10-cp315-cp315t-win32.whl", hash = "sha256:7d7a63566eaf38ff3535723909a17dcd548af25236e7d89496bc8b4ac4041c04", size = 16989140, upload-time = "2026-05-10T23:52:20.14Z" },
-    { url = "https://files.pythonhosted.org/packages/3d/14/83168813ad79231c91e31ed20c37ac1d712d1ef434fee70e00f0f52d77b2/imagecodecs-2026.5.10-cp315-cp315t-win_amd64.whl", hash = "sha256:40a22aebc4575742b86e8f1465f4d357c3b18f4c07b58fc17f6bf96d48ab5477", size = 20985176, upload-time = "2026-05-10T23:52:23.876Z" },
-    { url = "https://files.pythonhosted.org/packages/0a/a4/7eb6200e1bb72fd9b2a62d8a1734a5460fba72db0d40aa7bf0302284a0b3/imagecodecs-2026.5.10-cp315-cp315t-win_arm64.whl", hash = "sha256:06cea6c5f94ad5df835f908306eeb251b82118bf165f28e6331221a9a4976e66", size = 16511700, upload-time = "2026-05-10T23:52:27.275Z" },
 ]
 
 [[package]]
@@ -1666,24 +1695,18 @@ wheels = [
 
 [[package]]
 name = "numcodecs"
-version = "0.16.5"
+version = "0.15.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "deprecated" },
     { name = "numpy" },
-    { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/44/bd/8a391e7c356366224734efd24da929cc4796fff468bfb179fe1af6548535/numcodecs-0.16.5.tar.gz", hash = "sha256:0d0fb60852f84c0bd9543cc4d2ab9eefd37fc8efcc410acd4777e62a1d300318", size = 6276387, upload-time = "2025-11-21T02:49:48.986Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/63/fc/bb532969eb8236984ba65e4f0079a7da885b8ac0ce1f0835decbb3938a62/numcodecs-0.15.1.tar.gz", hash = "sha256:eeed77e4d6636641a2cc605fbc6078c7a8f2cc40f3dfa2b3f61e52e6091b04ff", size = 6267275, upload-time = "2025-02-10T10:23:33.254Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/38/38/071ced5a5fd1c85ba0e14ba721b66b053823e5176298c2f707e50bed11d9/numcodecs-0.16.5-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:25be3a516ab677dad890760d357cfe081a371d9c0a2e9a204562318ac5969de3", size = 1654359, upload-time = "2025-11-21T02:49:33.673Z" },
-    { url = "https://files.pythonhosted.org/packages/d1/c0/5f84ba7525577c1b9909fc2d06ef11314825fc4ad4378f61d0e4c9883b4a/numcodecs-0.16.5-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:0107e839ef75b854e969cb577e140b1aadb9847893937636582d23a2a4c6ce50", size = 1144237, upload-time = "2025-11-21T02:49:35.294Z" },
-    { url = "https://files.pythonhosted.org/packages/0b/00/787ea5f237b8ea7bc67140c99155f9c00b5baf11c49afc5f3bfefa298f95/numcodecs-0.16.5-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:015a7c859ecc2a06e2a548f64008c0ec3aaecabc26456c2c62f4278d8fc20597", size = 8483064, upload-time = "2025-11-21T02:49:36.454Z" },
-    { url = "https://files.pythonhosted.org/packages/c4/e6/d359fdd37498e74d26a167f7a51e54542e642ea47181eb4e643a69a066c3/numcodecs-0.16.5-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:84230b4b9dad2392f2a84242bd6e3e659ac137b5a1ce3571d6965fca673e0903", size = 9126063, upload-time = "2025-11-21T02:49:38.018Z" },
-    { url = "https://files.pythonhosted.org/packages/27/72/6663cc0382ddbb866136c255c837bcb96cc7ce5e83562efec55e1b995941/numcodecs-0.16.5-cp313-cp313-win_amd64.whl", hash = "sha256:5088145502ad1ebf677ec47d00eb6f0fd600658217db3e0c070c321c85d6cf3d", size = 799275, upload-time = "2025-11-21T02:49:39.558Z" },
-    { url = "https://files.pythonhosted.org/packages/3c/9e/38e7ca8184c958b51f45d56a4aeceb1134ecde2d8bd157efadc98502cc42/numcodecs-0.16.5-cp314-cp314-macosx_10_13_x86_64.whl", hash = "sha256:b05647b8b769e6bc8016e9fd4843c823ce5c9f2337c089fb5c9c4da05e5275de", size = 1654721, upload-time = "2025-11-21T02:49:40.602Z" },
-    { url = "https://files.pythonhosted.org/packages/a1/37/260fa42e7b2b08e6e00ad632f8dd620961a60a459426c26cea390f8c68d0/numcodecs-0.16.5-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:3832bd1b5af8bb3e413076b7d93318c8e7d7b68935006b9fa36ca057d1725a8f", size = 1146887, upload-time = "2025-11-21T02:49:41.721Z" },
-    { url = "https://files.pythonhosted.org/packages/4e/15/e2e1151b5a8b14a15dfd4bb4abccce7fff7580f39bc34092780088835f3a/numcodecs-0.16.5-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:49f7b7d24f103187f53135bed28bb9f0ed6b2e14c604664726487bb6d7c882e1", size = 8476987, upload-time = "2025-11-21T02:49:43.363Z" },
-    { url = "https://files.pythonhosted.org/packages/6d/30/16a57fc4d9fb0ba06c600408bd6634f2f1753c54a7a351c99c5e09b51ee2/numcodecs-0.16.5-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:aec9736d81b70f337d89c4070ee3ffeff113f386fd789492fa152d26a15043e4", size = 9102377, upload-time = "2025-11-21T02:49:45.508Z" },
-    { url = "https://files.pythonhosted.org/packages/31/a5/a0425af36c20d55a3ea884db4b4efca25a43bea9214ba69ca7932dd997b4/numcodecs-0.16.5-cp314-cp314-win_amd64.whl", hash = "sha256:b16a14303800e9fb88abc39463ab4706c037647ac17e49e297faa5f7d7dbbf1d", size = 819022, upload-time = "2025-11-21T02:49:47.39Z" },
+    { url = "https://files.pythonhosted.org/packages/78/57/acbc54b3419e5be65015e47177c76c0a73e037fd3ae2cde5808169194d4d/numcodecs-0.15.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:e3d82b70500cf61e8d115faa0d0a76be6ecdc24a16477ee3279d711699ad85f3", size = 1688220, upload-time = "2025-02-10T10:23:23.79Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/56/9863fa6dc679f40a31bea5e9713ee5507a31dcd3ee82ea4b1a9268ce52e8/numcodecs-0.15.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:1d471a1829ce52d3f365053a2bd1379e32e369517557c4027ddf5ac0d99c591e", size = 1180294, upload-time = "2025-02-10T10:23:25.533Z" },
+    { url = "https://files.pythonhosted.org/packages/fa/91/d96999b41e3146b6c0ce6bddc5ad85803cb4d743c95394562c2a4bb8cded/numcodecs-0.15.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1dfdea4a67108205edfce99c1cb6cd621343bc7abb7e16a041c966776920e7de", size = 8834323, upload-time = "2025-02-10T10:23:27.46Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/32/233e5ede6568bdb044e6f99aaa9fa39827ff3109c6487fc137315f733586/numcodecs-0.15.1-cp313-cp313-win_amd64.whl", hash = "sha256:a4f7bdb26f1b34423cb56d48e75821223be38040907c9b5954eeb7463e7eb03c", size = 831955, upload-time = "2025-02-10T10:23:30.601Z" },
 ]
 
 [[package]]
@@ -1881,7 +1904,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
