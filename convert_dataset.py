@@ -25,10 +25,10 @@ NAMING_CONSISTENCY = {
     "nuclei": "nucleus",
 }
 
-WRITE_LABELS_TO = "Deconv"
+WRITE_LABELS_TO = "Deconv" # original name
 SCALE_T = 600.0
-UNIT_XYZ = "micrometers"
-UNIT_T = "seconds"
+UNIT_XYZ = "micrometer"
+UNIT_T = "second"
 CHANNEL_DISPLAY_RANGE = {"Deconv": {"Channel0": (0, 27000), "Channel1": (0, 8000)}}
 DEFAULT_DISPLAY_RANGE = (0, 1500)
 
