@@ -1,0 +1,274 @@
+"""Subsampling of 002 dataset for publication on zenodo."""
+
+# %%
+from pathlib import Path
+from typing import cast, TYPE_CHECKING
+
+import rich_click as click
+
+if TYPE_CHECKING:
+    import ngio
+
+
+DATASET_SLICES = {
+    "full": slice(None),
+    "mini": slice(275, 325, 1),
+    "mini-lowT": slice(0, None, 15),
+    "mini-varT": list(range(185, 285, 10))
+    + list(range(285, 315))
+    + list(range(315, 415, 10)),
+    "tiny": slice(300, 305, 1),
+    "tiny-lowT": slice(0, 400, 80),
+    "tiny-varT": [282, 292, 302, 303, 304],
+}
+
+DATASET_IMAGES = (
+    "raw.ome.zarr",
+    "denoise.ome.zarr",
+    "deconv.ome.zarr",
+)
+
+DATASET_LABELS = (
+    "nucleus",
+    "cell",
+    "lumen",
+)
+
+
+@click.command()
+@click.argument(
+    "input_dir", type=click.Path(exists=True, file_okay=False, path_type=Path)
+)
+@click.argument(
+    "output_dir", type=click.Path(exists=False, file_okay=False, path_type=Path)
+)
+@click.option(
+    "--dataset-name",
+    "-n",
+    type=click.Choice(DATASET_SLICES.keys()),
+    default="tiny",
+    show_default=True,
+)
+@click.option("--prefix", "-p", type=str, default="", show_default=True)
+@click.option(
+    "--overwrite/--no-overwrite",
+    default=False,
+    show_default=True,
+    help="Overwrite existing output.",
+)
+def main(
+    input_dir: Path, output_dir: Path, dataset_name: str, prefix: str, overwrite: bool
+) -> None:
+    import ngio
+    import polars as pl
+    import rustworkx as rx
+    from track_io import read_geff_like_to_rx, rx_to_geff_like, slice_retain_edges, _write_geff_like, slice_timestamps_table
+
+    # input_dir = Path(r"N:\ldp_dev\data_zarr\Max\002")
+    # output_dir = Path(r"N:\ldp_dev\data_zenodo")
+
+    # prefix = "intestinal-organoid-medeiros"
+    # dataset_name = "tini-varT"
+    slc = DATASET_SLICES[dataset_name]
+    output_path = output_dir / f"{prefix}{input_dir.name}-{dataset_name}"
+
+    # for processing_step in ["raw.ome.zarr", "denoise.ome.zarr", "deconv.ome.zarr"]:
+    for processing_step in ["deconv.ome.zarr"]:
+        container_path = input_dir / processing_step
+        out_container_path = output_path / processing_step
+        tracks_path = container_path / "tracks" / "nucleus.geff.like"
+
+        # print(f"slicing {processing_step!r}...")
+        container = ngio.open_ome_zarr_container(container_path)
+        img = container.get_image("0")
+        arr = img.get_as_dask()
+
+        out_arr = arr[slc]
+
+        # t_scale = cast(float, img.pixel_size.get("t"))
+        # if isinstance(slc, slice):
+        #     new_t_scale = t_scale * (1 if slc.step is None else slc.step)
+        #     new_t_unit = img.time_unit
+        # else:
+        new_t_scale = 1.0
+        new_t_unit = None
+
+        click.echo(f"dataset: {dataset_name}")
+        click.echo(f"t_scale: {new_t_scale}")
+        click.echo(f"t_unit:  {new_t_unit}")
+        click.echo(f"shape:   {out_arr.shape}")
+        click.echo(f"from:    {container_path}")
+        click.echo(f"to:      {out_container_path}")
+        click.echo()
+
+        click.echo(f"deriving image...")
+        out_container = container.derive_image(
+            out_container_path, shape=out_arr.shape, time_spacing=new_t_scale, overwrite=True
+        )
+        if new_t_unit is None:
+            _reset_time_unit_to_frames(out_container)
+        out_img = out_container.get_image("0")
+        click.echo("writing array...")
+        out_img.set_array(out_arr)
+        click.echo("consolidating...")
+        out_img.consolidate()
+        click.echo("done.")
+        click.echo()
+
+        for label_name in container.list_labels():
+            click.echo(f"slicing {label_name!r}...")
+            out_lbl_img = out_container.derive_label(label_name, overwrite=True)
+            lbl_img = container.get_label(label_name, path="0")
+            lbl_arr = lbl_img.get_as_dask()
+
+            out_lbl_arr = lbl_arr[slc]
+            out_lbl_img.set_array(out_lbl_arr)
+            click.echo("consolidating...")
+            out_lbl_img.consolidate()
+            click.echo("done.")
+            click.echo()
+
+        click.echo("slicing timestamp table...")
+        table = container.get_table('timestamps')
+        out_table = slice_timestamps_table(table, slc)
+        out_container.add_table(name='timestamps', table=out_table, backend='parquet')
+        click.echo("done.")
+        click.echo()
+
+
+        if tracks_path.exists():
+            click.echo("slicing tracking graph...")
+            out_tracks_path = out_container_path / "tracks" / "nucleus.geff.like"
+            out_tracks_path.mkdir(parents=True, exist_ok=True)
+            graph = read_geff_like_to_rx(tracks_path)
+            slice_retain_edges(graph, slc)
+            geff_like = rx_to_geff_like(graph)
+            _write_geff_like(out_tracks_path, geff_like)
+            click.echo("done.")
+            click.echo()
+
+
+def _reset_time_unit_to_frames(container: "ngio.OmeZarrContainer") -> None:
+    attrs = container._group_handler.load_attrs()
+    attrs['ome']['multiscales'][0]['axes'][0].pop('unit')
+    container._group_handler.write_attrs(attrs, overwrite=True)
+
+
+
+
+# # %%
+
+
+# nodes_path = container_path / "tracks" / "nucleus.geff.like" / "nodes.parquet"
+# edges_path = container_path / "tracks" / "nucleus.geff.like" / "edges.parquet"
+# track_edges_path = container_path / "tracks" / "nucleus.geff.like" / "track_edges.parquet"
+
+
+# df_nodes = pl.read_parquet(nodes_path)
+# df_edges = pl.read_parquet(edges_path)
+# df_track_edges = pl.read_parquet(track_edges_path)
+
+# # from convert_dataset import NODE_SELECTOR, EDGE_SELECTOR
+
+# # df_nodes = df_nodes.select(NODE_SELECTOR)
+# # df_edges = df_edges.select(EDGE_SELECTOR)
+
+
+# # %%
+# import numpy as np
+# from rustworkx.visualization import mpl_draw
+# import colorcet as cc
+
+# def _slice_to_indices(slc: slice | list[int], extent: int | None) -> list[int]:
+#     if not isinstance(slc, slice):
+#         return slc
+#     if slc.stop is None and extent is None:
+#         raise ValueError("Provide a slice with end or an extent")
+#     start = slc.start if slc.start else 0
+#     stop = slc.stop if slc.stop else extent
+#     step = slc.step if slc.step else 1
+#     return list(range(start, stop, step))
+
+# def to_rustworkx(df_nodes: pl.DataFrame, df_edges: pl.DataFrame) -> rx.PyDiGraph:
+#     graph = rx.PyDiGraph()
+#     for row in df_nodes.rows(named=True):
+#         graph.add_node(row)
+
+#     for edge in df_edges.rows(named=True):
+#         try:
+#             graph.add_edge(
+#                 edge["node_start"],
+#                 edge["node_end"],
+#                 {k: v for k, v in edge.items() if k in ["dispacement"]},
+#             )
+#         except IndexError:
+#             print(f"Edge contains invalid node: {edge}")
+
+#     return graph
+
+
+# class Graph:
+#     def __init__(self, graph: rx.PyDiGraph):
+#         self.graph = graph
+
+#     @classmethod
+#     def from_data_frames(
+#         cls, df_nodes: pl.DataFrame, df_edges: pl.DataFrame
+#     ) -> "Graph":
+#         if not df_nodes["node_id"].to_list() == list(range(len(df_nodes))):
+#             raise ValueError("'node_id' column is not contiguous")
+#         graph = to_rustworkx(df_nodes, df_edges)
+#         return Graph(graph)
+
+#     def draw(
+#         self,
+#         pos_x="t_idx",
+#         pos_y="dendrogram_uniform",
+#         color="track_id",
+#         cmap="cet_glasbey",
+#     ):
+#         df = pl.DataFrame(self.graph.nodes())
+#         df_pos = df.select(pos_x, pos_y)
+#         color_arr = df[color]
+#         pos = {k: v for k, v in zip(df["node_id"], df_pos.rows())}
+#         return mpl_draw(
+#             self.graph, pos=pos, node_size=3, node_color=color_arr, cmap=cmap
+#         )
+
+#     def slice(self, slc: slice, key: str = "t_idx") -> "Self":
+#         indices = _slice_to_indices(
+#             slc, pl.DataFrame(self.graph.nodes())[key].max() + 1
+#         )
+#         for node_id in self.graph.node_indexes():
+#             if self.graph[node_id][key] not in indices:
+#                 self.graph.remove_node_retain_edges(node_id)
+#         return self
+
+
+# def _pos_from_node_features(
+#     graph: rx.PyGraph, pos_x: str = "t_idx", pos_y: str = "dendogram_uniform"
+# ):
+#     df = pl.DataFrame(graph.nodes())
+#     df_pos = df.select(pos_x, pos_y)
+#     pos = {k: v for k, v in zip(df["rx_node_id"], df_pos.rows())}
+#     return pos
+
+# def find_root_nodes(graph: rx.PyDiGraph):
+#     root_node_ids = []
+
+#     for node_id in graph.node_indices():
+#         if graph.in_degree(node_id) == 0:
+#             root_node_ids.append(node_id)
+#     return root_node_ids
+
+# def add_generation(graph: rx.PyDiGraph, key: str = 'generation') -> rx.PyDiGraph:
+#     root_node_ids = find_root_nodes(graph)
+
+#     for i, node_ids in enumerate(rx.layers(graph, root_node_ids, index_output=True)):
+#         for node_id in node_ids:
+#             graph[node_id][key] = i
+#     return graph
+
+
+if __name__ == "__main__":
+    main()

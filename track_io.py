@@ -4,6 +4,9 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Final, Literal, TypeGuard, TypeVar
 
+from ngio.tables import GenericTable
+from ngio.tables.backends import BackendMeta
+
 import geff
 import polars as pl
 import rustworkx as rx
@@ -138,12 +141,17 @@ def _write_geff_like(path: str | Path, dfs: GeffLike) -> None:
 
 
 def read_geff(path: str | Path) -> rx.PyDiGraph:
-    graph, _ = geff.read(path, backend="rustworkx")
+    graph, meta = geff.read(path, backend="rustworkx")
+    # sort node data based on meta.node_props_metadata
+    props_order = list(meta.node_props_metadata.keys())
+    for node_index in graph.node_indices():
+        data = graph[node_index]
+        graph[node_index] = {k: data[k] for k in props_order if k in data}
+
     if is_di_graph(graph):
         return graph
     else:
         raise TypeError("Only directed GEFF graphs are supported.")
-
 
 def write_geff(
     path: str | Path,
@@ -219,7 +227,9 @@ def geff_like_to_rx(
     rx_graph.attrs = {PERSISTENT_NODE_ID_ATTR: to_rx_id_map}
     rx_graph.add_nodes_from(
         {k: v for k, v in row.items() if v is not None}
-        for row in df_nodes.drop("_rx_node_id").drop(node_id_column).iter_rows(named=True)
+        for row in df_nodes.drop("_rx_node_id")
+        .drop(node_id_column)
+        .iter_rows(named=True)
     )
 
     df_edges = (
@@ -528,3 +538,25 @@ def compute_circular_dendrogram(
             ).sin()
         ).alias(f"circ_{dendrogram}_y"),
     ]
+
+
+def slice_timestamps_table(
+    table: GenericTable,
+    slc: slice | list[int],
+    index_column_name: str = "t_idx",
+) -> GenericTable:
+    df_timestamps = table.lazy_frame.collect()
+    indices = _slice_to_indices(slc, extent=df_timestamps[index_column_name].max())
+    df_timestamps_out = (
+        df_timestamps.filter(pl.col(index_column_name).is_in(indices))
+        .sort(index_column_name)
+        .with_row_index()
+        .select(pl.col("index").alias(index_column_name), pl.col("posix_timestamp"))
+    )
+
+    return GenericTable.from_table_data(
+        df_timestamps_out,
+        meta=BackendMeta(
+            backend="parquet", index_key=index_column_name, index_type="int"
+        ),
+    )
