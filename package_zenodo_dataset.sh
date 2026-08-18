@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 input="/links/groups/liberali/ldp_dev/data_zenodo"
 output="/links/groups/liberali/ldp_dev/data_zenodo_zip"
