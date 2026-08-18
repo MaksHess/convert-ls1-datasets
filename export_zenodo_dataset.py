@@ -14,12 +14,10 @@ DATASET_SLICES = {
     "full": slice(None),
     "mini": slice(275, 325, 1),
     "mini-lowT": slice(0, None, 15),
-    "mini-varT": list(range(185, 285, 10))
-    + list(range(285, 315))
-    + list(range(315, 415, 10)),
+    "mini-varT": list(range(235, 295, 3)) + list(range(295, 325)),
     "tiny": slice(300, 305, 1),
     "tiny-lowT": slice(0, 400, 80),
-    "tiny-varT": [282, 292, 302, 303, 304],
+    "tiny-varT": [296, 299, 302, 303, 304],
 }
 
 DATASET_IMAGES = (
@@ -62,7 +60,13 @@ def main(
     import ngio
     import polars as pl
     import rustworkx as rx
-    from track_io import read_geff_like_to_rx, rx_to_geff_like, slice_retain_edges, _write_geff_like, slice_timestamps_table
+    from track_io import (
+        read_geff_like_to_rx,
+        rx_to_geff_like,
+        slice_retain_edges,
+        _write_geff_like,
+        slice_timestamps_table,
+    )
 
     # input_dir = Path(r"N:\ldp_dev\data_zarr\Max\002")
     # output_dir = Path(r"N:\ldp_dev\data_zenodo")
@@ -73,8 +77,8 @@ def main(
     output_path = output_dir / f"{prefix}{input_dir.name}-{dataset_name}"
 
     for processing_step in ["denoise.ome.zarr", "deconv.ome.zarr"]:
-    # for processing_step in ["raw.ome.zarr", "denoise.ome.zarr", "deconv.ome.zarr"]:
-    # for processing_step in ["deconv.ome.zarr"]:
+        # for processing_step in ["raw.ome.zarr", "denoise.ome.zarr", "deconv.ome.zarr"]:
+        # for processing_step in ["deconv.ome.zarr"]:
         container_path = input_dir / processing_step
         out_container_path = output_path / processing_step
         tracks_path = container_path / "tracks" / "nucleus.geff.like"
@@ -104,7 +108,10 @@ def main(
 
         click.echo(f"deriving image...")
         out_container = container.derive_image(
-            out_container_path, shape=out_arr.shape, time_spacing=new_t_scale, overwrite=True
+            out_container_path,
+            shape=out_arr.shape,
+            time_spacing=new_t_scale,
+            overwrite=True,
         )
         if new_t_unit is None:
             _reset_time_unit_to_frames(out_container)
@@ -130,12 +137,11 @@ def main(
             click.echo()
 
         click.echo("slicing timestamp table...")
-        table = container.get_table('timestamps')
+        table = container.get_table("timestamps")
         out_table = slice_timestamps_table(table, slc)
-        out_container.add_table(name='timestamps', table=out_table, backend='parquet')
+        out_container.add_table(name="timestamps", table=out_table, backend="parquet")
         click.echo("done.")
         click.echo()
-
 
         if tracks_path.exists():
             click.echo("slicing tracking graph...")
@@ -151,10 +157,8 @@ def main(
 
 def _reset_time_unit_to_frames(container: "ngio.OmeZarrContainer") -> None:
     attrs = container._group_handler.load_attrs()
-    attrs['ome']['multiscales'][0]['axes'][0].pop('unit')
+    attrs["ome"]["multiscales"][0]["axes"][0].pop("unit")
     container._group_handler.write_attrs(attrs, overwrite=True)
-
-
 
 
 # # %%
