@@ -546,7 +546,7 @@ def slice_timestamps_table(
     index_column_name: str = "t_idx",
 ) -> GenericTable:
     df_timestamps = table.lazy_frame.collect()
-    indices = _slice_to_indices(slc, extent=df_timestamps[index_column_name].max())
+    indices = _slice_to_indices(slc, extent=df_timestamps[index_column_name].max()+1)
     df_timestamps_out = (
         df_timestamps.filter(pl.col(index_column_name).is_in(indices))
         .sort(index_column_name)
