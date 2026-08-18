@@ -8,5 +8,6 @@ mkdir -p "$output"
 
 for dir in "$input"/*/; do
     name=$(basename "$dir")
-    zip -r "$output/$name.zip" "$dir"
+    rm -f "$output/$name.zip"
+    (cd "$input" && zip -r "$output/$name.zip" "$name")
 done
