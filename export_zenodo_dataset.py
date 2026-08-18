@@ -72,7 +72,8 @@ def main(
     slc = DATASET_SLICES[dataset_name]
     output_path = output_dir / f"{prefix}{input_dir.name}-{dataset_name}"
 
-    for processing_step in ["raw.ome.zarr", "denoise.ome.zarr", "deconv.ome.zarr"]:
+    for processing_step in ["denoise.ome.zarr", "deconv.ome.zarr"]:
+    # for processing_step in ["raw.ome.zarr", "denoise.ome.zarr", "deconv.ome.zarr"]:
     # for processing_step in ["deconv.ome.zarr"]:
         container_path = input_dir / processing_step
         out_container_path = output_path / processing_step
