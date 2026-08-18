@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "colorcet>=3.2.1",
+    "dca-helpers",
     "geff",
     "imagecodecs>=2026.5.10",
     "matplotlib>=3.10.9",
@@ -33,6 +34,7 @@ include = ["convert_dataset.py", "lstree_to_tracks.py", "parse_ldp_ls1_data.py"]
 
 [tool.uv.sources]
 geff = { git = "https://github.com/MaksHess/geff", subdirectory = "packages/geff", branch = "fix/node-props-order" }
+dca-helpers = { git = "https://github.com/chanzuckerberg/dynamic-cell-atlas-specs.git", rev = "v0.2.7" }
 
 [dependency-groups]
 dev = [
