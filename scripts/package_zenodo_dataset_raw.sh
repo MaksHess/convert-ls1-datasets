@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+
+input="/links/groups/liberali/ldp_dev/data_zenodo_raw"
+output="/links/groups/liberali/ldp_dev/data_zenodo_raw_zip"
+
+mkdir -p "$output"
+
+for dir in "$input"/*/; do
+    name=$(basename "$dir")
+    rm -f "$output/$name.zip"
+    (cd "$input" && zip -r "$output/$name.zip" "$name")
+done
