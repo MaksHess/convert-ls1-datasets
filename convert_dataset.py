@@ -217,19 +217,19 @@ def add_timestamp_table(
     import ngio
 
     click.echo("adding timestamps table...")
-    for fn in Path(output).glob("*.ome.zarr"):
-        click.echo(fn.name)
-        container = ngio.open_ome_zarr_container(fn)
-        n_timepoints = container.get_image().dimensions.get("t")
-        if n_timepoints is None:
-            click.ClickException(f"dataset {fn.name} has no time dimension.")
-            raise
-        table = _build_timestamp_table(
-            start_time=start_time,
-            n_timepoints=n_timepoints,
-            dt_seconds=SCALE_T,
-        )
-        container.add_table("timestamps", table, backend="parquet")
+    fn = Path(output) / "deconv.ome.zarr"
+    click.echo(fn.name)
+    container = ngio.open_ome_zarr_container(fn)
+    n_timepoints = container.get_image().dimensions.get("t")
+    if n_timepoints is None:
+        click.ClickException(f"dataset {fn.name} has no time dimension.")
+        raise
+    table = _build_timestamp_table(
+        start_time=start_time,
+        n_timepoints=n_timepoints,
+        dt_seconds=SCALE_T,
+    )
+    container.add_table("timestamps", table, backend="parquet")
 
 
 def _build_timestamp_table(
