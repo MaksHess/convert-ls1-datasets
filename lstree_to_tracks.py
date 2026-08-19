@@ -135,10 +135,13 @@ def add_tracklet_ids(
     root_node_ids = []
     split_node_ids = []
     merge_node_ids = []
+    leaf_node_ids = []
 
     for node_idx in rx_graph.node_indices():
         if rx_graph.in_degree(node_idx) == 0:
             root_node_ids.append(node_idx)
+        if rx_graph.out_degree(node_idx) == 0:
+            leaf_node_ids.append(node_idx)
         if rx_graph.in_degree(node_idx) > 1:
             merge_node_ids.append(node_idx)
             for edge in rx_graph.in_edges(node_idx):
@@ -156,6 +159,7 @@ def add_tracklet_ids(
         for node_id in node_ids:
             rx_graph[node_id]["track_id"] = tracklet_id
             rx_graph[node_id]["is_root_node"] = int(node_id in root_node_ids)
+            rx_graph[node_id]["is_leaf_node"] = int(node_id in leaf_node_ids)
             rx_graph[node_id]["is_split_node"] = int(node_id in split_node_ids)
             rx_graph[node_id]["is_merge_node"] = int(node_id in merge_node_ids)
 
@@ -180,7 +184,9 @@ def add_tracklet_ids(
     return rx_graph, tracklet_graph
 
 
-def compute_circular_dendogram(t: str, dendogram: str, scale: float = 0.95) -> list[pl.Expr]:
+def compute_circular_dendogram(
+    t: str, dendogram: str, scale: float = 0.95
+) -> list[pl.Expr]:
     return [
         (
             pl.col(t)

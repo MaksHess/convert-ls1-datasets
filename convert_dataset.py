@@ -84,6 +84,7 @@ NODE_SELECTOR = [
     "track_id",  # computed here
     # additional graph stuff
     pl.col("is_root_node").cast(pl.Boolean),  # computed here
+    pl.col("is_leaf_node").cast(pl.Boolean), # computed here
     pl.col("is_split_node").cast(pl.Boolean),  # computed here
     pl.col("is_merge_node").cast(pl.Boolean),  # computed here
     # props
