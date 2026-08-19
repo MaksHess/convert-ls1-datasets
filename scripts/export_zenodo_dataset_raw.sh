@@ -2,7 +2,7 @@
 set -euo pipefail
 
 INPUT_BASE="/links/groups/liberali/ldp_dev/data_zarr/Max/001"
-OUTPUT_BASE="/links/groups/liberali/ldp_dev/data_zenodo"
+OUTPUT_BASE="/links/groups/liberali/ldp_dev/data_zenodo_raw"
 
 for dataset in mini "mini-lowT" "mini-varT" "small" "small-lowT" "small-varT" "full"; do
     echo "=== Exporting $dataset ==="
