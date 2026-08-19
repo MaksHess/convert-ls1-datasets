@@ -142,12 +142,13 @@ def main(
             click.echo("done.")
             click.echo()
 
-        click.echo("slicing timestamp table...")
-        table = container.get_table("timestamps")
-        out_table = slice_timestamps_table(table, slc)
-        out_container.add_table(name="timestamps", table=out_table, backend="parquet", overwrite=overwrite)
-        click.echo("done.")
-        click.echo()
+        if "timestamps" in container.list_tables():
+            click.echo("slicing timestamp table...")
+            table = container.get_table("timestamps")
+            out_table = slice_timestamps_table(table, slc)
+            out_container.add_table(name="timestamps", table=out_table, backend="parquet", overwrite=overwrite)
+            click.echo("done.")
+            click.echo()
 
         if tracks_path.exists():
             click.echo("slicing tracking graph...")
