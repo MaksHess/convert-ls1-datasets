@@ -1,5 +1,5 @@
 # OME-Zarr live imaging dataset example for Zenodo
-This repository contains a timelapse movie including segmentation and tracks from the publication [Multiscale light-sheet organoid imaging framework](https://doi.org/10.1038/s41467-022-32465-z) converted to OME-Zarr.
+This repository contains a timelapse movie including segmentation and tracks from the publication [Multiscale light-sheet organoid imaging framework](https://doi.org/10.1038/s41467-022-32465-z) converted to OME-Zarr and related specs (GEFF for lineage tree, ngio table for timestamps & DCA for additional metadata).
 
 ## Datasets
 To facilitate access for different use-cases the original dataset (`001-full`) has been downsampled/sliced. 
@@ -27,5 +27,5 @@ All datasets contain identical components and include tracking graphs with cell-
 | lumen segmentation   | `deconv.ome.zarr/labels/lumen`              | multiscale (t, z, y, x)      | [OME-Zarr v0.5](https://ngff.openmicroscopy.org/specifications/0.5/index.html)        |                                                                                         |
 | posix timestamps     | `deconv.ome.zarr/tables/timestamps`         | ngio:generic-table (parquet) | [ngio table](https://biovisioncenter.github.io/ngio/stable/table_specs/overview/)     | `t_idx` index into t-axis of array; `posix_timestamp` posix epoch in seconds (`float`). |
 | lineage tree         | `deconv.ome.zarr/tracks/nucleus.geff`       | geff:tracks                  | [GEFF v1.2](https://liveimagetrackingtools.org/geff/v1.3.0.1.2/specification/)        | Additional features stored as node/edge properties.                                     |
-| DCA metadata         | `<image>.ome.zarr/zarr.json:attributes:dca` | json blob                    | [DCA v0.2](https://chanzuckerberg.github.io/dynamic-cell-atlas-specs/v0.2/index.html) | Biological metadata, channel metadata and normalization statistics from DCA specs       |
+| DCA metadata         | `<image>.ome.zarr/zarr.json:attributes:dca` | json blob                    | [DCA v0.2](https://chanzuckerberg.github.io/dynamic-cell-atlas-specs/v0.2/index.html) | Experimental metadata, channel metadata and normalization statistics from DCA specs     |
 | additional DCA meta  | `deconv.ome.zarr/tables/obs`                | dca:table                    | [DCA v0.2](https://chanzuckerberg.github.io/dynamic-cell-atlas-specs/v0.2/index.html) | Additional metadata components that did not make it to the json.                        |
