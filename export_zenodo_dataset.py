@@ -10,14 +10,14 @@ if TYPE_CHECKING:
     import ngio
 
 
-DATASET_SLICES = {
+DATASET_SLICES = { # for 001, target merger at t_idx=182
     "full": slice(None),
-    "mini": slice(275, 325, 1),
-    "mini-lowT": slice(0, None, 15),
-    "mini-varT": list(range(235, 295, 3)) + list(range(295, 325)),
-    "tiny": slice(300, 305, 1),
-    "tiny-lowT": slice(0, 400, 80),
-    "tiny-varT": [296, 299, 302, 303, 304],
+    "small": slice(160, 210, 1),
+    "small-lowT": slice(0, None, 14),
+    "small-varT": list(range(120, 180, 3)) + list(range(180, 210)),
+    "mini": slice(180, 185, 1),
+    "mini-lowT": slice(0, 400, 80),
+    "mini-varT": [175, 178, 181, 182, 183],
 }
 
 DATASET_IMAGES = (
@@ -47,15 +47,23 @@ DATASET_LABELS = (
     default="tiny",
     show_default=True,
 )
+@click.option(
+    "--dataset-images",
+    "-img",
+    type=click.Choice(DATASET_IMAGES),
+    multiple=True,
+    default=("denoise.ome.zarr", "deconv.ome.zarr"),
+    show_default=True,
+)
 @click.option("--prefix", "-p", type=str, default="", show_default=True)
 @click.option(
     "--overwrite/--no-overwrite",
-    default=False,
+    default=True,
     show_default=True,
     help="Overwrite existing output.",
 )
 def main(
-    input_dir: Path, output_dir: Path, dataset_name: str, prefix: str, overwrite: bool
+    input_dir: Path, output_dir: Path, dataset_name: str, dataset_images: tuple[str], prefix: str, overwrite: bool
 ) -> None:
     import ngio
     import polars as pl
@@ -72,13 +80,11 @@ def main(
     # output_dir = Path(r"N:\ldp_dev\data_zenodo")
 
     # prefix = "intestinal-organoid-medeiros"
-    # dataset_name = "tini-varT"
+    # dataset_name = "mini-varT"
     slc = DATASET_SLICES[dataset_name]
     output_path = output_dir / f"{prefix}{input_dir.name}-{dataset_name}"
 
-    for processing_step in ["denoise.ome.zarr", "deconv.ome.zarr"]:
-        # for processing_step in ["raw.ome.zarr", "denoise.ome.zarr", "deconv.ome.zarr"]:
-        # for processing_step in ["deconv.ome.zarr"]:
+    for processing_step in dataset_images:
         container_path = input_dir / processing_step
         out_container_path = output_path / processing_step
         tracks_path = container_path / "tracks" / "nucleus.geff.like"
@@ -111,7 +117,7 @@ def main(
             out_container_path,
             shape=out_arr.shape,
             time_spacing=new_t_scale,
-            overwrite=True,
+            overwrite=overwrite,
         )
         if new_t_unit is None:
             _reset_time_unit_to_frames(out_container)
@@ -125,7 +131,7 @@ def main(
 
         for label_name in container.list_labels():
             click.echo(f"slicing {label_name!r}...")
-            out_lbl_img = out_container.derive_label(label_name, overwrite=True)
+            out_lbl_img = out_container.derive_label(label_name, overwrite=overwrite)
             lbl_img = container.get_label(label_name, path="0")
             lbl_arr = lbl_img.get_as_dask()
 
@@ -139,7 +145,7 @@ def main(
         click.echo("slicing timestamp table...")
         table = container.get_table("timestamps")
         out_table = slice_timestamps_table(table, slc)
-        out_container.add_table(name="timestamps", table=out_table, backend="parquet")
+        out_container.add_table(name="timestamps", table=out_table, backend="parquet", overwrite=overwrite)
         click.echo("done.")
         click.echo()
 
