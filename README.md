@@ -2,17 +2,17 @@
 This repository contains a timelapse movie including segmentation and tracks from the publication [Multiscale light-sheet organoid imaging framework](https://doi.org/10.1038/s41467-022-32465-z) converted to OME-Zarr.
 
 ## Datasets
-To facilitate access for different use-cases the original dataset (`002-full`) has been downsampled/sliced. 
+To facilitate access for different use-cases the original dataset (`001-full`) has been downsampled/sliced. 
 
-| Dataset Name  | T Shape | Size on Disk | T-Slice / Indices                                  | Notes                                    |
-| ------------- | ------- | ------------ | -------------------------------------------------- | ---------------------------------------- |
-| 002-full      | 667     | 38.1 GB      | `slice(None)`                                      | Full dataset.                            |
-| 002-mini      | 50      | 2.5 GB       | `slice(275, 325, 1)`                               | Contiguous slice.                        |
-| 002-mini-lowT | 45      | 2.6 GB       | `slice(0, None, 15)`                               | Every 15th frame.                        |
-| 002-mini-varT | 50      | 2.4 GB       | `list(range(235, 295, 3)) + list(range(295, 325))` | Variable rate (every 3rd -> contiguous). |
-| 002-tiny      | 5       | 0.3 GB       | `slice(300, 305, 1)`                               | Congiguous slice.                        |
-| 002-tiny-lowT | 5       | 0.3 GB       | `slice(0, 400, 80)`                                | Every 80th frame up to 400.              |
-| 002-tiny-varT | 5       | 0.3 GB       | `[296, 299, 302, 303, 304]`                        | Variable rate (every 3rd -> contiguous). |
+| Dataset Name   | T Shape | Size on Disk | T-Slice / Indices                                  | Notes                                    |               Lineage Tree Plot                |
+| -------------- | ------- | ------------ | -------------------------------------------------- | ---------------------------------------- | :--------------------------------------------: |
+| 001-full       | 667     | 38.1 GB      | `slice(None)`                                      | Full dataset.                            |    <img src="images/full.jpg" height="120">    |
+| 001-small      | 50      | 2.5 GB       | `slice(160, 210, 1)`                               | Contiguous slice.                        |   <img src="images/small.jpg" height="120">    |
+| 001-small-lowT | 48      | 2.6 GB       | `slice(0, None, 14)`                               | Every 15th frame.                        | <img src="images/small-lowT.jpg" height="120"> |
+| 001-small-varT | 50      | 2.4 GB       | `list(range(120, 180, 3)) + list(range(180, 210))` | Variable rate (every 3rd -> contiguous). | <img src="images/small-varT.jpg" height="120"> |
+| 001-mini       | 5       | 0.3 GB       | `slice(180, 185, 1)`                               | Congiguous slice.                        |    <img src="images/mini.jpg" height="120">    |
+| 001-mini-lowT  | 5       | 0.3 GB       | `slice(0, 400, 80)`                                | Every 80th frame up to 400.              | <img src="images/mini-lowT.jpg" height="120">  |
+| 001-mini-varT  | 5       | 0.3 GB       | `[175, 178, 181, 182, 183]`                        | Variable rate (every 3rd -> contiguous). | <img src="images/mini-varT.jpg" height="120">  |
 
 
 ## Dataset components
