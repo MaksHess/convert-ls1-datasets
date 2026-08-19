@@ -25,7 +25,7 @@ NAMING_CONSISTENCY = {
     "nuclei": "nucleus",
 }
 
-WRITE_LABELS_TO = "Deconv" # original name
+WRITE_LABELS_TO = "Deconv"  # original name
 SCALE_T = 600.0
 UNIT_XYZ = "micrometer"
 UNIT_T = "second"
@@ -87,16 +87,16 @@ NODE_SELECTOR = [
     pl.col("is_split_node").cast(pl.Boolean),  # computed here
     pl.col("is_merge_node").cast(pl.Boolean),  # computed here
     # props
-    "nuclei_volume",
-    "nuclei_mean_radius",
-    "nuclei_max_radius",
-    "nuclei_dist_to_basal_mean",
-    "nuclei_dist_to_lumen_mean",
+    pl.col("nuclei_volume").alias("nucleus_volume"),
+    pl.col("nuclei_mean_radius").alias("nucleus_mean_radius"),
+    pl.col("nuclei_max_radius").alias("nucleus_max_radius"),
+    pl.col("nuclei_dist_to_basal_mean").alias("nucleus_dist_to_basal_mean"),
+    pl.col("nuclei_dist_to_lumen_mean").alias("nucleus_dist_to_lumen_mean"),
     "cell_volume",
     "cell_mean_radius",
     "cell_max_radius",
     pl.col("dendogram_uniform").alias("dendrogram_uniform"),
-    pl.col("dendogram_symmetric").alias("dendogram_symmetric"),
+    pl.col("dendogram_symmetric").alias("dendrogram_symmetric"),
 ]
 
 EDGE_SELECTOR = [
@@ -145,10 +145,9 @@ def main(input: Path, output: Path, overwrite: bool) -> None:
         )
     start_time = ACQUISITION_START[dataset_id]
     click.echo(f"Acquisition start time: {start_time}")
-    
+
     create_channels(input, output, scale=scale, overwrite=overwrite)
     create_labels(input, output, overwrite=overwrite)
-    # add_image_roi_table(output) # not needed anymore
     add_timestamp_table(output, start_time=start_time, overwrite=overwrite)
     create_tracking_tables(input, output)
 
@@ -346,23 +345,6 @@ def create_channels(
         click.echo("consolidating...")
         images[step].consolidate()
 
-    # for label_object, df in df_lbl.items():
-    #     print(f"Processing {label_object!r}")
-    #     container = containers[WRITE_LABELS_TO]
-    #     label_image = container.derive_label(label_object)
-
-    #     for row in df.iter_rows(named=True):
-    #         t_id = row["t_id"]
-    #         print(f"{t_id=}")
-    #         t_slice = slice(t_id, t_id + 1)
-
-    #         fn = root / row["path"]
-    #         frame = tifffile.imread(fn)
-
-    #         label_image.set_array(np.expand_dims(frame, 0), t=t_slice)
-
-    #     print("consolidating...")
-    #     label_image.consolidate()
 
 
 def create_labels(
