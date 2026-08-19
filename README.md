@@ -10,7 +10,7 @@ To facilitate access for different use-cases the original dataset (`001-full`) h
 | 001-small      | 50      | 2.5 GB       | `slice(160, 210, 1)`                               | Contiguous slice.                        |   <img src="images/small.jpg" height="120">    |
 | 001-small-lowT | 48      | 2.6 GB       | `slice(0, None, 14)`                               | Every 15th frame.                        | <img src="images/small-lowT.jpg" height="120"> |
 | 001-small-varT | 50      | 2.4 GB       | `list(range(120, 180, 3)) + list(range(180, 210))` | Variable rate (every 3rd -> contiguous). | <img src="images/small-varT.jpg" height="120"> |
-| 001-mini       | 5       | 0.3 GB       | `slice(180, 185, 1)`                               | Congiguous slice.                        |    <img src="images/mini.jpg" height="120">    |
+| 001-mini       | 5       | 0.3 GB       | `slice(180, 185, 1)`                               | Contiguous slice.                        |    <img src="images/mini.jpg" height="120">    |
 | 001-mini-lowT  | 5       | 0.3 GB       | `slice(0, 400, 80)`                                | Every 80th frame up to 400.              | <img src="images/mini-lowT.jpg" height="120">  |
 | 001-mini-varT  | 5       | 0.3 GB       | `[175, 178, 181, 182, 183]`                        | Variable rate (every 3rd -> contiguous). | <img src="images/mini-varT.jpg" height="120">  |
 
@@ -28,4 +28,4 @@ All datasets contain identical components and include tracking graphs with cell-
 | posix timestamps     | `deconv.ome.zarr/tables/timestamps`         | ngio:generic-table (parquet) | [ngio table](https://biovisioncenter.github.io/ngio/stable/table_specs/overview/)     | `t_idx` index into t-axis of array; `posix_timestamp` posix epoch in seconds (`float`). |
 | lineage tree         | `deconv.ome.zarr/tracks/nucleus.geff`       | geff:tracks                  | [GEFF v1.2](https://liveimagetrackingtools.org/geff/v1.3.0.1.2/specification/)        | Additional features stored as node/edge properties.                                     |
 | DCA metadata         | `<image>.ome.zarr/zarr.json:attributes:dca` | json blob                    | [DCA v0.2](https://chanzuckerberg.github.io/dynamic-cell-atlas-specs/v0.2/index.html) | Experimental metadata, channel metadata and normalization statistics from DCA specs     |
-| additional DCA meta  | `deconv.ome.zarr/tables/obs`                | dca:table                    | [DCA v0.2](https://chanzuckerberg.github.io/dynamic-cell-atlas-specs/v0.2/index.html) | Additional metadata components that did not make it to the json.                        |
+| additional DCA meta  | `<image>.ome.zarr/tables/obs`                | dca:table                    | [DCA v0.2](https://chanzuckerberg.github.io/dynamic-cell-atlas-specs/v0.2/index.html) | Additional metadata components that did not make it to the json.                        |
