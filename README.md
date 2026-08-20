@@ -8,7 +8,7 @@ To facilitate access for different use-cases the original dataset (`001-full`) h
 | -------------- | ------- | ------------ | -------------------------------------------------- | ---------------------------------------- | :--------------------------------------------: |
 | 001-full       | 667     | 38.1 GB      | `slice(None)`                                      | Full dataset.                            |    <img src="images/full.jpg" height="120">    |
 | 001-small      | 50      | 2.5 GB       | `slice(160, 210, 1)`                               | Contiguous slice.                        |   <img src="images/small.jpg" height="120">    |
-| 001-small-lowT | 48      | 2.6 GB       | `slice(0, None, 14)`                               | Every 15th frame.                        | <img src="images/small-lowT.jpg" height="120"> |
+| 001-small-lowT | 48      | 2.6 GB       | `slice(0, None, 14)`                               | Every 14th frame.                        | <img src="images/small-lowT.jpg" height="120"> |
 | 001-small-varT | 50      | 2.4 GB       | `list(range(120, 180, 3)) + list(range(180, 210))` | Variable rate (every 3rd -> contiguous). | <img src="images/small-varT.jpg" height="120"> |
 | 001-mini       | 5       | 0.3 GB       | `slice(180, 185, 1)`                               | Contiguous slice.                        |    <img src="images/mini.jpg" height="120">    |
 | 001-mini-lowT  | 5       | 0.3 GB       | `slice(0, 400, 80)`                                | Every 80th frame up to 400.              | <img src="images/mini-lowT.jpg" height="120">  |
