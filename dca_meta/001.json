@@ -1,0 +1,370 @@
+{
+  "dca": {
+    "version": "0.2",
+    "url": "https://github.com/chanzuckerberg/dynamic-cell-atlas-specs/tree/main/docs/v0.2/schema.json",
+    "channels": [
+      {
+        "biological_annotation": {
+          "biological_target": "plasma membrane",
+          "marker": "mem9-GFP (AcGFP1-Mem-9)",
+          "marker_type": "endogenous_tag"
+        },
+        "channel_type": "fluorescence",
+        "description": "Channel 0 \u2014 plasma membrane marker. mem9-GFP (AcGFP1-Mem-9) acylated membrane-targeting peptide labels the plasma membrane of all cells in mouse intestinal organoids during live light-sheet imaging.",
+        "index": 0,
+        "name": "mem9"
+      },
+      {
+        "biological_annotation": {
+          "biological_target": "nucleus",
+          "marker": "H2B-mCherry",
+          "marker_type": "endogenous_tag"
+        },
+        "channel_type": "fluorescence",
+        "description": "Channel 1 \u2014 nuclear marker. H2B-mCherry (Histone H2B) labels nuclei of all cells in mouse intestinal organoids and is used for single-cell tracking and lineage tree reconstruction during live light-sheet imaging.",
+        "index": 1,
+        "name": "H2B"
+      }
+    ],
+    "acquisition": {
+      "imaging_environment": {
+        "co2_percent": 5.0,
+        "temperature_c": 37.0
+      },
+      "microscope": {
+        "manufacturer": "Viventis Microscopy S\u00e0rl",
+        "modality": "fluorescence",
+        "model": "LS1-Live",
+        "type": "Inverted"
+      },
+      "plate_type": "Matrigel/medium drops (5 \u00b5l) on a patterned ~50 \u00b5m fluorinated ethylene propylene (FEP) foil light-sheet sample holder",
+      "time_increment_s": "variable"
+    },
+    "biosample": {
+      "additional_metadata": [
+        {
+          "name": "mouse_line",
+          "value": "H2B-mCherry C57BL/6 \u00d7 C3H F1 female, heterozygous for H2B-mCherry"
+        },
+        {
+          "name": "membrane_reporter",
+          "value": "LV.EF1.AcGFP1-Mem-9 lentivirus (Clontech, Takara Bio USA)"
+        },
+        {
+          "name": "donor_age_range",
+          "value": "8-12 weeks"
+        },
+        {
+          "name": "input_aggregate_cell_count",
+          "value": "2500 FACS-sorted single cells per 5 \u00b5l Matrigel/medium drop"
+        }
+      ],
+      "disease": [
+        {
+          "label": "normal",
+          "ontology_term_id": "PATO:0000461"
+        }
+      ],
+      "development_stage": [
+        {
+          "label": "mature stage",
+          "ontology_term_id": "MmusDv:0000110"
+        }
+      ],
+      "group_id": "liberali_ls1",
+      "organism": [
+        {
+          "label": "Mus musculus",
+          "ontology_term_id": "NCBITaxon:10090"
+        }
+      ],
+      "tissue": [
+        {
+          "label": "small intestine",
+          "ontology_term_id": "UBERON:0002108"
+        }
+      ],
+      "tissue_type": "organoid"
+    },
+    "provenance": {
+      "acquisition.imaging_environment": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "the imaging chamber was transferred to the microscope kept at 37 \u00b0C and 5% CO2",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "acquisition.imaging_environment",
+        "source_kind": "agent"
+      },
+      "acquisition.microscope": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "For all light-sheet experiments a LS1-Live dual illumination and inverted detection microscope from Viventis Microscopy Sarl was used.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "acquisition.microscope",
+        "source_kind": "agent"
+      },
+      "acquisition.plate_type": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "mounting them as 5 uL mix drops with Matrigel on top of a ca. 50 um thick fluorinated ethylene propylene (FEP) foil, which are then covered in medium",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "acquisition.plate_type",
+        "source_kind": "agent"
+      },
+      "acquisition.time_increment_s": {
+        "field_path": "acquisition.time_increment_s",
+        "source_kind": "original_data"
+      },
+      "biosample.additional_metadata.donor_age_range": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "Male and female outbred mice between 8 and 12 weeks old were used for all experiments.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.additional_metadata.donor_age_range",
+        "source_kind": "agent"
+      },
+      "biosample.additional_metadata.input_aggregate_cell_count": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "2500 cells were then embedded in 5 ul drop of Matrigel/medium in 60/40 ratio.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.additional_metadata.input_aggregate_cell_count",
+        "source_kind": "agent"
+      },
+      "biosample.additional_metadata.membrane_reporter": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "For H2B-mCherry/mem9-GFP organoids, H2B-mCherry organoids were infected with LV.EF1.AcGFP1-Mem-9 lentivirus particle (Clontech, Takara Bio USA).",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.additional_metadata.membrane_reporter",
+        "source_kind": "agent"
+      },
+      "biosample.additional_metadata.mouse_line": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "For all light-sheet movies, we used H2B-mCherry C57BL/6 x C3H F1 female intestines heterozygous for H2B-mCherry",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.additional_metadata.mouse_line",
+        "source_kind": "agent"
+      },
+      "biosample.development_stage": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "Male and female outbred mice between 8 and 12 weeks old were used for all experiments.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.development_stage",
+        "source_kind": "agent"
+      },
+      "biosample.disease": {
+        "citation": {
+          "match_status": "none",
+          "quote": "For all light-sheet movies, we used H2B-mCherry C57BL/6 x C3H F1 female intestines heterozygous for H2B-mCherry (received already as intestines, kind gift from T. Hiragi lab, EMBL).",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.disease",
+        "source_kind": "agent"
+      },
+      "biosample.group_id": {
+        "field_path": "biosample.group_id",
+        "source_kind": "original_data"
+      },
+      "biosample.organism": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "Male and female outbred mice between 8 and 12 weeks old were used for all experiments.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.organism",
+        "source_kind": "agent"
+      },
+      "biosample.tissue": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "For initial organoid culture a section of the initial part of the small intestine was opened lengthwise and cleaned with cold PBS.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.tissue",
+        "source_kind": "agent"
+      },
+      "biosample.tissue_type": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "long-term light-sheet imaging of intestinal organoids into digital organoids",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "biosample.tissue_type",
+        "source_kind": "agent"
+      },
+      "image_data.processing_variant": {
+        "field_path": "image_data.processing_variant",
+        "source_kind": "original_data"
+      },
+      "specimen.growth_conditions": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "Organoids were kept in IntestiCult Organoid Growth Medium (STEM CELL Technologies) with 100 \u00b5g/ml Penicillin-Streptomycin for further amplification and maintenance. [...] 2500 cells were then embedded in 5 ul drop of Matrigel/medium in 60/40 ratio. [...] For the first 3 days, medium was supplemented with 20% Wnt3a-CM and 10 \u00b5M Y-27632 (ROCK inhibitor, STEM CELL Technologies). For the first day, in addition, 3 \u00b5M of CHIR99021 (STEM CELL Technologies) were supplemented.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "specimen.growth_conditions",
+        "source_kind": "agent"
+      },
+      "specimen.preparation_method": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "Different single cells were selected as starting positions and imaged every 10 min for up to 5 days.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "specimen.preparation_method",
+        "source_kind": "agent"
+      },
+      "specimen.specimen_state": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "After 2 h incubation in a cell culture incubator the imaging chamber was transferred to the microscope kept at 37 \u00b0C and 5% CO2.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "specimen.specimen_state",
+        "source_kind": "agent"
+      },
+      "study.dataset_name": {
+        "field_path": "study.dataset_name",
+        "source_kind": "original_data"
+      },
+      "study.description": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "Here we present an experimental and image-processing framework capable of turning long-term light-sheet imaging of intestinal organoids into digital organoids. The framework combines specific imaging optimization combined with data processing via deep learning techniques to segment single organoids, their lumen, cells and nuclei in 3D over long periods of time.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "study.description",
+        "source_kind": "agent"
+      },
+      "study.experimenter": {
+        "field_path": "study.experimenter",
+        "source_kind": "original_data"
+      },
+      "study.license": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "It is set to `CC-BY-4.0` on a **human** determination (the authors were contacted directly), not an agent inference",
+          "source_url": "https://github.com/chanzuckerberg/biocurator/blob/main/data/liberali_ls1/DATASET_CARD.md"
+        },
+        "field_path": "study.license",
+        "source_kind": "human"
+      },
+      "study.related_publication": {
+        "citation": {
+          "match_status": "exact",
+          "quote": "Multiscale light-sheet organoid imaging framework \u2014 Nature Communications, vol 13, article 4864, published 2022-08-18; authors de Medeiros Gustavo; Ortiz Raphael; Strnad Petr; Boni Andrea; Moos Franziska; Repina Nicole; Challet Meylan Ludivine; Maurer Francisca; Liberali Prisca",
+          "source_url": "https://api.crossref.org/works/10.1038/s41467-022-32465-z"
+        },
+        "field_path": "study.related_publication",
+        "source_kind": "agent"
+      },
+      "study.release_date": {
+        "field_path": "study.release_date",
+        "source_kind": "original_data"
+      },
+      "study.source": {
+        "field_path": "study.source",
+        "source_kind": "original_data"
+      },
+      "study.study_type": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "For all light-sheet experiments a LS1-Live dual illumination and inverted detection microscope from Viventis Microscopy Sarl was used. Different single cells were selected as starting positions and imaged every 10 min for up to 5 days.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "study.study_type",
+        "source_kind": "agent"
+      },
+      "study.year_imaged": {
+        "citation": {
+          "match_status": "none",
+          "quote": "Received 2022 May 24; Accepted 2022 Aug 2; Collection date 2022.",
+          "source_url": "https://www.nature.com/articles/s41467-022-32465-z"
+        },
+        "field_path": "study.year_imaged",
+        "source_kind": "agent"
+      },
+      "study_component.assay": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "3D fluorescence time-lapse microscopy (no time-lapse-specific EFO assay term; coarse EFO:0002909 microscopy assay used)",
+          "source_url": "https://www.ebi.ac.uk/ols4/ontologies/efo/classes?obo_id=EFO:0002909"
+        },
+        "field_path": "study_component.assay",
+        "source_kind": "agent"
+      },
+      "study_component.imaging_method": {
+        "citation": {
+          "match_status": "fuzzy",
+          "quote": "selective plane illumination fluorescence microscopy \u2014 the FBbi term for light-sheet fluorescence imaging",
+          "source_url": "https://www.ebi.ac.uk/ols4/ontologies/fbbi/classes?obo_id=FBbi:00000369"
+        },
+        "field_path": "study_component.imaging_method",
+        "source_kind": "agent"
+      }
+    },
+    "specimen": {
+      "growth_conditions": "Mouse small-intestinal organoids maintained in IntestiCult Organoid Growth Medium (STEM CELL Technologies) with 100 \u00b5g/ml Penicillin-Streptomycin. For light-sheet imaging, FACS-sorted single cells were collected in ENR medium (advanced DMEM/F-12 with 15 mM HEPES (STEM CELL Technologies), 100 \u00b5g/ml Penicillin-Streptomycin, 1x Glutamax, 1x B27, 1x N2 (Thermo Fisher Scientific), 1 mM N-acetylcysteine (Sigma), 500 ng/ml R-Spondin, 100 ng/ml Noggin (PeproTech), 100 ng/ml murine EGF (R&D Systems)); 2500 cells were embedded in a 5 \u00b5l drop of Matrigel/medium at a 60/40 ratio. For the first 3 days the medium was supplemented with 20% Wnt3a-conditioned medium and 10 \u00b5M Y-27632 (ROCK inhibitor), and on the first day additionally with 3 \u00b5M CHIR99021. Medium was exchanged manually every day during acquisition.",
+      "preparation_method": [
+        {
+          "label": "living tissue",
+          "ontology_term_id": "FBbi:00000025"
+        }
+      ],
+      "specimen_state": "live"
+    },
+    "study": {
+      "additional_metadata": [],
+      "dataset_name": "Liberali Lab LS1 Time-Lapse Organoid Dataset",
+      "description": "Live 3D light-sheet time-lapse recordings of mouse intestinal organoids from the Liberali lab. Each store is one cropped organoid ROI, imaged in two fluorescence channels (mem9-GFP plasma membrane, H2B-mCherry nuclei) at 10-minute intervals over several hundred timepoints. Every ROI is provided in three processing variants \u2014 raw, deconvolved and denoised. The deconvolved store additionally carries cell, nuclei and lumen segmentation masks, single-cell tracking converted to GEFF, VTP surface meshes, and per-cell and organoid-level feature tables.",
+      "experimenter": [
+        {
+          "first_name": "Andrea",
+          "last_name": "Boni"
+        }
+      ],
+      "license": "CC-BY-4.0",
+      "related_publication": [
+        {
+          "authors_name": "de Medeiros G, Ortiz R, Strnad P, Boni A, Moos F, Repina N, Challet Meylan L, Maurer F, Liberali P",
+          "doi": "10.1038/s41467-022-32465-z",
+          "publication_year": 2022,
+          "title": "Multiscale light-sheet organoid imaging framework"
+        }
+      ],
+      "release_date": "2026-04-01",
+      "source": "Liberali Lab",
+      "study_type": [
+        "TimeLapse",
+        "SPIM",
+        "FourDPlus"
+      ],
+      "year_imaged": "2016"
+    },
+    "study_component": {
+      "assay": [
+        {
+          "label": "microscopy assay",
+          "ontology_term_id": "EFO:0002909"
+        }
+      ],
+      "imaging_method": [
+        {
+          "label": "selective plane illumination fluorescence microscopy",
+          "ontology_term_id": "FBbi:00000369"
+        }
+      ]
+    }
+  }
+}
