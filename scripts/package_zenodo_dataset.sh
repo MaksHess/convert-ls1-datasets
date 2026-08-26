@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-input="/links/groups/liberali/ldp_dev/data_zenodo"
-output="/links/groups/liberali/ldp_dev/data_zenodo_zip"
+input="/links/groups/liberali/ldp_dev/zenodo/data_zenodo"
+output="/links/groups/liberali/ldp_dev/zenodo/data_zenodo_zip"
 
 mkdir -p "$output"
 
