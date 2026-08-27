@@ -24,6 +24,7 @@ dependencies = [
 convert-ls1-dataset = "convert_dataset:main"
 convert-geff-like-to-geff = "convert_geff_like_to_geff:main"
 export-zenodo-dataset = "export_zenodo_dataset:main"
+export-leon-dataset = "export_leon_dataset:main"
 add-dca-metadata = "add_dca_metadata:main"
 rechunk-ome-zarr-datasets = "rechunk_datasets:main"
 
