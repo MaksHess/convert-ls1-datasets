@@ -566,7 +566,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "colorcet", specifier = ">=3.2.1" },
-    { name = "dca-helpers", git = "https://github.com/chanzuckerberg/dynamic-cell-atlas-specs.git?rev=v0.2.7" },
+    { name = "dca-helpers", git = "https://github.com/chanzuckerberg/dynamic-cell-atlas-specs.git?rev=v0.2.8" },
     { name = "geff", git = "https://github.com/MaksHess/geff?subdirectory=packages%2Fgeff&branch=fix%2Fnode-props-order" },
     { name = "imagecodecs", specifier = ">=2026.5.10" },
     { name = "matplotlib", specifier = ">=3.10.9" },
@@ -623,8 +623,8 @@ array = [
 
 [[package]]
 name = "dca-helpers"
-version = "0.2.7"
-source = { git = "https://github.com/chanzuckerberg/dynamic-cell-atlas-specs.git?rev=v0.2.7#5161e563c6417a318227fa52a7f27e8c3879d333" }
+version = "0.2.8"
+source = { git = "https://github.com/chanzuckerberg/dynamic-cell-atlas-specs.git?rev=v0.2.8#8cfaeb127ad539c43c20e0c329d8d898f8829e0c" }
 dependencies = [
     { name = "acquire-zarr" },
     { name = "boto3" },
