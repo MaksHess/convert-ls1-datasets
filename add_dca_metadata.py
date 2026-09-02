@@ -68,6 +68,12 @@ def _slice_dca_metadata(dca_meta: dict, slc: "slice | list[int]") -> dict:
         channel_stats["timepoint_statistics"] = {
             str(new_idx): tp_stats[str(old_idx)] for new_idx, old_idx in enumerate(indices)
         }
+
+    timestamps = dca_meta.get("acquisition", {}).get("timestamps")
+    if timestamps is not None:
+        indices = _slice_to_indices(slc, extent=len(timestamps))
+        dca_meta["acquisition"]["timestamps"] = [timestamps[old_idx] for old_idx in indices]
+
     return dca_meta
 
 
