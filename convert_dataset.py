@@ -29,7 +29,7 @@ WRITE_LABELS_TO = "Deconv"  # original name
 SCALE_T = 600.0
 UNIT_XYZ = "micrometer"
 UNIT_T = "second"
-CHANNEL_DISPLAY_RANGE = {"Deconv": {"Channel0": (0, 27000), "Channel1": (0, 8000)}}
+CHANNEL_DISPLAY_RANGE = {"Deconv": {"Channel0": (0, 8000), "Channel1": (0, 27000)}}
 DEFAULT_DISPLAY_RANGE = (0, 1500)
 
 PIXEL_SCALES = {
