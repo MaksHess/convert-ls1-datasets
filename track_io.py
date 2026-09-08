@@ -8,6 +8,7 @@ from ngio.tables import GenericTable
 from ngio.tables.backends import BackendMeta
 
 import geff
+import numpy as np
 import polars as pl
 import rustworkx as rx
 from geff_spec import PropMetadata
@@ -55,6 +56,10 @@ EDGE_TYPE_COLUMN: Final[str] = "edge_type"
 # GEFF-like track_node columns
 TRACK_NODE_ID_COLUMN: Final[str] = TRACK_ID_COLUMN
 GENERATION_COLUMN: Final[str] = "generation"
+
+# geff-spec reserved shape-descriptor node properties (GeffMetadata.sphere / .ellipsoid)
+RADIUS_COLUMN: Final[str] = "radius"
+ELLIPSOID_COLUMN: Final[str] = "ellipsoid"
 
 
 # GEFF-like track_edges columns
@@ -140,7 +145,9 @@ def _write_geff_like(path: str | Path, dfs: GeffLike) -> None:
     df_edges.write_parquet(Path(path) / EDGES_FILE_NAME)
 
 
-def read_geff(path: str | Path) -> rx.PyDiGraph:
+def read_geff(
+    path: str | Path, return_metadata: bool = False
+) -> rx.PyDiGraph | tuple[rx.PyDiGraph, geff.GeffMetadata]:
     graph, meta = geff.read(path, backend="rustworkx")
     # sort node data based on meta.node_props_metadata
     props_order = list(meta.node_props_metadata.keys())
@@ -148,10 +155,10 @@ def read_geff(path: str | Path) -> rx.PyDiGraph:
         data = graph[node_index]
         graph[node_index] = {k: data[k] for k in props_order if k in data}
 
-    if is_di_graph(graph):
-        return graph
-    else:
+    if not is_di_graph(graph):
         raise TypeError("Only directed GEFF graphs are supported.")
+
+    return (graph, meta) if return_metadata else graph
 
 def write_geff(
     path: str | Path,
@@ -455,6 +462,27 @@ def add_edge_type(
         for edge in rx_graph.in_edges(merge_node_id):
             edge_data = rx_graph.get_edge_data(*edge[:2])
             edge_data[key] = EdgeType.MERGE
+
+
+def add_radius_and_ellipsoid(
+    rx_graph: rx.PyDiGraph,
+    radius_by_node: dict[int, float],
+    ellipsoid_by_node: dict[int, np.ndarray],
+    overwrite: bool = False,
+    radius_key: str = RADIUS_COLUMN,
+    ellipsoid_key: str = ELLIPSOID_COLUMN,
+) -> None:
+    for node_id in rx_graph.node_indices():
+        if radius_key in rx_graph[node_id] and not overwrite:
+            raise ValueError(
+                f"{radius_key!r} exists on graph node {node_id}, set overwrite=True to overwrite."
+            )
+        if ellipsoid_key in rx_graph[node_id] and not overwrite:
+            raise ValueError(
+                f"{ellipsoid_key!r} exists on graph node {node_id}, set overwrite=True to overwrite."
+            )
+        rx_graph[node_id][radius_key] = radius_by_node[node_id]
+        rx_graph[node_id][ellipsoid_key] = ellipsoid_by_node[node_id]
 
 
 def add_track_and_lineage_ids(

@@ -15,6 +15,7 @@ dependencies = [
     "polars>=1.40.1",
     "rich-click>=1.9.7",
     "rustworkx>=0.17.1",
+    "scikit-image",
     "seaborn>=0.13.2",
     "tables>=3.11.1",
     "tifffile>=2026.5.2",
@@ -27,6 +28,7 @@ export-zenodo-dataset = "export_zenodo_dataset:main"
 export-leon-dataset = "export_leon_dataset:main"
 add-dca-metadata = "add_dca_metadata:main"
 rechunk-ome-zarr-datasets = "rechunk_datasets:main"
+add-radius-and-ellipsoid = "add_radius_and_ellipsoid:main"
 
 [build-system]
 requires = ["hatchling"]
