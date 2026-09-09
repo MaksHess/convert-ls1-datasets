@@ -29,6 +29,7 @@ export-leon-dataset = "export_leon_dataset:main"
 add-dca-metadata = "add_dca_metadata:main"
 rechunk-ome-zarr-datasets = "rechunk_datasets:main"
 add-radius-and-ellipsoid = "add_radius_and_ellipsoid:main"
+add-roi-table = "add_roi_table:main"
 
 [build-system]
 requires = ["hatchling"]
