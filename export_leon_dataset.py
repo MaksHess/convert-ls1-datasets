@@ -1,4 +1,4 @@
-"""Subsampling of 002 dataset for publication on zenodo."""
+"""Exports for Leon."""
 
 # %%
 from pathlib import Path
@@ -10,8 +10,9 @@ if TYPE_CHECKING:
     import ngio
 
 
-DATASET_SLICES = { # for 002
-    "sample": slice(90, 350),
+DATASET_SLICES = {
+    "full": slice(None),
+    "sample": slice(90, 350), # for 002
 }
 
 DATASET_IMAGES = (
