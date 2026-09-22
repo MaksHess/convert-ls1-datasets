@@ -1,8 +1,8 @@
-"""Subsampling of 002 dataset for publication on zenodo."""
+"""Subsampling of 001 dataset for publication on zenodo."""
 
 # %%
 from pathlib import Path
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import rich_click as click
 
@@ -166,120 +166,6 @@ def _reset_time_unit_to_frames(container: "ngio.OmeZarrContainer") -> None:
     attrs = container._group_handler.load_attrs()
     attrs["ome"]["multiscales"][0]["axes"][0].pop("unit")
     container._group_handler.write_attrs(attrs, overwrite=True)
-
-
-# # %%
-
-
-# nodes_path = container_path / "tracks" / "nucleus.geff.like" / "nodes.parquet"
-# edges_path = container_path / "tracks" / "nucleus.geff.like" / "edges.parquet"
-# track_edges_path = container_path / "tracks" / "nucleus.geff.like" / "track_edges.parquet"
-
-
-# df_nodes = pl.read_parquet(nodes_path)
-# df_edges = pl.read_parquet(edges_path)
-# df_track_edges = pl.read_parquet(track_edges_path)
-
-# # from convert_dataset import NODE_SELECTOR, EDGE_SELECTOR
-
-# # df_nodes = df_nodes.select(NODE_SELECTOR)
-# # df_edges = df_edges.select(EDGE_SELECTOR)
-
-
-# # %%
-# import numpy as np
-# from rustworkx.visualization import mpl_draw
-# import colorcet as cc
-
-# def _slice_to_indices(slc: slice | list[int], extent: int | None) -> list[int]:
-#     if not isinstance(slc, slice):
-#         return slc
-#     if slc.stop is None and extent is None:
-#         raise ValueError("Provide a slice with end or an extent")
-#     start = slc.start if slc.start else 0
-#     stop = slc.stop if slc.stop else extent
-#     step = slc.step if slc.step else 1
-#     return list(range(start, stop, step))
-
-# def to_rustworkx(df_nodes: pl.DataFrame, df_edges: pl.DataFrame) -> rx.PyDiGraph:
-#     graph = rx.PyDiGraph()
-#     for row in df_nodes.rows(named=True):
-#         graph.add_node(row)
-
-#     for edge in df_edges.rows(named=True):
-#         try:
-#             graph.add_edge(
-#                 edge["node_start"],
-#                 edge["node_end"],
-#                 {k: v for k, v in edge.items() if k in ["dispacement"]},
-#             )
-#         except IndexError:
-#             print(f"Edge contains invalid node: {edge}")
-
-#     return graph
-
-
-# class Graph:
-#     def __init__(self, graph: rx.PyDiGraph):
-#         self.graph = graph
-
-#     @classmethod
-#     def from_data_frames(
-#         cls, df_nodes: pl.DataFrame, df_edges: pl.DataFrame
-#     ) -> "Graph":
-#         if not df_nodes["node_id"].to_list() == list(range(len(df_nodes))):
-#             raise ValueError("'node_id' column is not contiguous")
-#         graph = to_rustworkx(df_nodes, df_edges)
-#         return Graph(graph)
-
-#     def draw(
-#         self,
-#         pos_x="t_idx",
-#         pos_y="dendrogram_uniform",
-#         color="track_id",
-#         cmap="cet_glasbey",
-#     ):
-#         df = pl.DataFrame(self.graph.nodes())
-#         df_pos = df.select(pos_x, pos_y)
-#         color_arr = df[color]
-#         pos = {k: v for k, v in zip(df["node_id"], df_pos.rows())}
-#         return mpl_draw(
-#             self.graph, pos=pos, node_size=3, node_color=color_arr, cmap=cmap
-#         )
-
-#     def slice(self, slc: slice, key: str = "t_idx") -> "Self":
-#         indices = _slice_to_indices(
-#             slc, pl.DataFrame(self.graph.nodes())[key].max() + 1
-#         )
-#         for node_id in self.graph.node_indexes():
-#             if self.graph[node_id][key] not in indices:
-#                 self.graph.remove_node_retain_edges(node_id)
-#         return self
-
-
-# def _pos_from_node_features(
-#     graph: rx.PyGraph, pos_x: str = "t_idx", pos_y: str = "dendogram_uniform"
-# ):
-#     df = pl.DataFrame(graph.nodes())
-#     df_pos = df.select(pos_x, pos_y)
-#     pos = {k: v for k, v in zip(df["rx_node_id"], df_pos.rows())}
-#     return pos
-
-# def find_root_nodes(graph: rx.PyDiGraph):
-#     root_node_ids = []
-
-#     for node_id in graph.node_indices():
-#         if graph.in_degree(node_id) == 0:
-#             root_node_ids.append(node_id)
-#     return root_node_ids
-
-# def add_generation(graph: rx.PyDiGraph, key: str = 'generation') -> rx.PyDiGraph:
-#     root_node_ids = find_root_nodes(graph)
-
-#     for i, node_ids in enumerate(rx.layers(graph, root_node_ids, index_output=True)):
-#         for node_id in node_ids:
-#             graph[node_id][key] = i
-#     return graph
 
 
 if __name__ == "__main__":
